@@ -1,0 +1,20 @@
+node_modules/
+dist/
+build/
+out/
+.env
+.DS_Store
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Eseguibili e binari
+electron.exe
+*.exe
+*.dll
+*.so
+*.dylib
+
+# File temporanei di sistema
+Thumbs.db
