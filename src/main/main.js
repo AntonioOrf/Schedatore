@@ -19,7 +19,8 @@ function createWindow () {
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true, 
-      nodeIntegration: false
+      nodeIntegration: false,
+      plugins: true // Abilita il lettore PDF nativo di Chromium
     }
   });
 
@@ -95,4 +96,9 @@ ipcMain.handle('apri-pdf-esterno', async (event, fileName) => {
     }
   } catch (error) { console.error("Errore apertura PDF:", error); }
   return false;
+});
+
+// Nuova funzione per ottenere il percorso assoluto per iframe interno
+ipcMain.handle('get-allegato-path', (event, fileName) => {
+  return path.join(attachmentsDirPath, fileName);
 });

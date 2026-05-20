@@ -10,57 +10,200 @@
 </head>
 <body class="bg-stone-100 text-stone-800 min-h-screen p-4 md:p-6 flex flex-col h-screen overflow-hidden">
 
-    <!-- Modal Immagini -->
+    <!-- Modal Immagini/PDF -->
     <div id="image-modal" class="fixed inset-0 bg-black/90 z-50 hidden-tab flex justify-center items-center p-4 backdrop-blur-sm">
-        <button onclick="chiudiModal()" class="absolute top-6 right-6 text-stone-300 hover:text-white bg-black/50 p-2 rounded-full">
+        <button onclick="chiudiModal()" class="absolute top-6 right-6 text-stone-300 hover:text-white bg-black/50 p-2 rounded-sm z-10">
             <i data-lucide="x" class="w-8 h-8"></i>
         </button>
-        <img id="modal-img" class="max-w-full max-h-[90vh] rounded-md object-contain border border-stone-700">
+        <img id="modal-img" class="max-w-full max-h-[90vh] rounded-sm object-contain border border-stone-700 hidden">
+        <iframe id="modal-pdf" class="w-full h-[90vh] max-w-6xl bg-white rounded-sm shadow-2xl hidden" src=""></iframe>
+    </div>
+
+    <!-- Modal Nuova Cartella -->
+    <div id="folder-modal" class="fixed inset-0 bg-black/50 z-50 hidden-tab flex justify-center items-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-sm shadow-2xl w-full max-w-md overflow-hidden">
+            <div class="bg-stone-100 border-b border-stone-200 p-4">
+                <h3 class="font-bold text-lg text-amber-900 flex items-center gap-2">
+                    Nuova Cartella
+                </h3>
+            </div>
+            <div class="p-6">
+                <label class="block text-sm font-semibold text-stone-700 mb-2">Nome della cartella o percorso</label>
+                <input type="text" id="folder-name-input" placeholder="Es. Fondo Latino/Secolo XII" class="w-full p-2 border border-stone-300 rounded-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                <p class="text-xs text-stone-500 mt-2 italic">Consiglio: usa la barra ( / ) per creare automaticamente sottocartelle.</p>
+                <div class="mt-6 flex justify-end gap-3">
+                    <button onclick="chiudiFolderModal()" class="px-4 py-2 text-stone-600 hover:bg-stone-100 rounded-sm transition-colors font-medium">Annulla</button>
+                    <button onclick="confermaAggiungiCartella()" class="px-4 py-2 bg-amber-700 hover:bg-amber-800 text-white rounded-sm transition-colors font-medium shadow-sm">Crea Cartella</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nuovo Tipo Documento -->
+    <div id="new-type-modal" class="fixed inset-0 bg-black/50 z-50 hidden-tab flex justify-center items-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-sm shadow-2xl w-full max-w-lg overflow-hidden">
+            <div class="bg-stone-100 border-b border-stone-200 p-4 flex justify-between items-center">
+                <h3 class="font-bold text-lg text-amber-900 flex items-center gap-2">
+                    Crea Tipo Documento
+                </h3>
+                <button type="button" onclick="chiudiNewTypeModal()" class="text-stone-500 hover:text-stone-800"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-6">
+                <label class="block text-sm font-semibold text-stone-700 mb-2">Seleziona modello o creane uno nuovo</label>
+                <select id="new-type-select" onchange="applicaModello()" class="w-full p-2 border border-stone-300 rounded-sm mb-4 outline-none focus:ring-2 focus:ring-amber-500">
+                    <option value="custom">Nuovo documento vuoto</option>
+                    <option value="imbreviature">Modello: Imbreviature notarili</option>
+                    <option value="atti">Modello: Atti giudiziari</option>
+                    <option value="fiscali">Modello: Documenti fiscali</option>
+                </select>
+
+                <div id="custom-type-container" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-stone-700 mb-1">Nome del nuovo tipo</label>
+                        <input type="text" id="custom-type-name" placeholder="Es. Lettera" class="w-full p-2 border border-stone-300 rounded-sm outline-none focus:ring-2 focus:ring-amber-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-stone-700 mb-2">Campi di base</label>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
+                            <label class="cursor-pointer">
+                                <input type="checkbox" value="dataCronica" data-label="Data cronica" onchange="toggleCampoBase(this)" class="custom-type-field peer sr-only">
+                                <div class="px-3 py-2 border border-stone-300 rounded-sm text-center transition-colors peer-checked:bg-amber-100 peer-checked:border-amber-400 peer-checked:text-amber-900 peer-checked:font-semibold text-stone-600 hover:bg-stone-50 select-none">Data cronica</div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="checkbox" value="dataTopica" data-label="Data topica" onchange="toggleCampoBase(this)" class="custom-type-field peer sr-only">
+                                <div class="px-3 py-2 border border-stone-300 rounded-sm text-center transition-colors peer-checked:bg-amber-100 peer-checked:border-amber-400 peer-checked:text-amber-900 peer-checked:font-semibold text-stone-600 hover:bg-stone-50 select-none">Data topica</div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="checkbox" value="autore" data-label="Autore/i" onchange="toggleCampoBase(this)" class="custom-type-field peer sr-only">
+                                <div class="px-3 py-2 border border-stone-300 rounded-sm text-center transition-colors peer-checked:bg-amber-100 peer-checked:border-amber-400 peer-checked:text-amber-900 peer-checked:font-semibold text-stone-600 hover:bg-stone-50 select-none">Autore/i</div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="checkbox" value="titolo" data-label="Titolo / Cont." onchange="toggleCampoBase(this)" class="custom-type-field peer sr-only">
+                                <div class="px-3 py-2 border border-stone-300 rounded-sm text-center transition-colors peer-checked:bg-amber-100 peer-checked:border-amber-400 peer-checked:text-amber-900 peer-checked:font-semibold text-stone-600 hover:bg-stone-50 select-none">Titolo / Cont.</div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="checkbox" value="note" data-label="Note" onchange="toggleCampoBase(this)" class="custom-type-field peer sr-only">
+                                <div class="px-3 py-2 border border-stone-300 rounded-sm text-center transition-colors peer-checked:bg-amber-100 peer-checked:border-amber-400 peer-checked:text-amber-900 peer-checked:font-semibold text-stone-600 hover:bg-stone-50 select-none">Note</div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="checkbox" value="prezzo" data-label="Prezzo" onchange="toggleCampoBase(this)" class="custom-type-field peer sr-only">
+                                <div class="px-3 py-2 border border-stone-300 rounded-sm text-center transition-colors peer-checked:bg-amber-100 peer-checked:border-amber-400 peer-checked:text-amber-900 peer-checked:font-semibold text-stone-600 hover:bg-stone-50 select-none">Prezzo</div>
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-stone-700 mb-1">Campi aggiuntivi personalizzati</label>
+                        <div class="flex gap-2 mb-2">
+                            <input type="text" id="custom-type-extra-input" placeholder="Es. Supporto, Filigrana..." class="flex-1 p-2 border border-stone-300 rounded-sm outline-none focus:ring-2 focus:ring-amber-500" onkeydown="if(event.key === 'Enter') { event.preventDefault(); aggiungiCampoCustom(); }">
+                            <button type="button" onclick="aggiungiCampoCustom()" class="px-3 py-2 bg-stone-200 hover:bg-stone-300 text-stone-800 rounded-sm transition-colors font-bold"><i data-lucide="plus" class="w-5 h-5"></i></button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-stone-700 mb-1">Campi selezionati (trascina per riordinare)</label>
+                        <div id="custom-fields-list" class="flex flex-wrap gap-2 min-h-[3.5rem] p-3 bg-stone-50 border border-stone-200 rounded-sm items-center shadow-inner">
+                            <span class="text-xs text-stone-400 italic" id="empty-fields-placeholder">Seleziona o aggiungi dei campi...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex justify-end gap-3">
+                    <button type="button" onclick="chiudiNewTypeModal()" class="px-4 py-2 text-stone-600 hover:bg-stone-100 rounded-sm transition-colors font-medium">Annulla</button>
+                    <button type="button" onclick="confermaCreaTipo()" class="px-4 py-2 bg-amber-700 hover:bg-amber-800 text-white rounded-sm transition-colors font-medium shadow-sm">Crea</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Header Fisso In Alto -->
-    <header class="shrink-0 mb-6 flex flex-col md:flex-row items-center justify-between border-b-2 border-amber-700/20 pb-4">
-        <div>
-            <h1 class="text-3xl font-bold text-amber-900 flex items-center justify-center md:justify-start gap-3">
-                <i data-lucide="book-open" class="w-8 h-8 text-amber-700"></i>
-                Archivium Manuscriptorum
-            </h1>
-            <p class="text-stone-500 mt-1 italic text-sm">Organizzazione ad albero & Allegati</p>
-        </div>
+    <header class="shrink-0 mb-6 flex flex-wrap items-center gap-2 border-b border-stone-200 pb-3 bg-white/50 backdrop-blur-md rounded-sm p-2 shadow-sm">
+        <button onclick="toggleSidebar()" class="p-2 hover:bg-stone-200 rounded-sm transition-colors text-stone-600 hover:text-stone-900" title="Mostra/Nascondi Struttura">
+            <i data-lucide="panel-left" class="w-5 h-5"></i>
+        </button>
+        <button onclick="switchSidebarTab('folders')" class="p-2 hover:bg-stone-200 rounded-sm transition-colors text-stone-600 hover:text-stone-900" title="Apri Cartelle">
+            <i data-lucide="folder" class="w-5 h-5"></i>
+        </button>
         
-        <nav class="flex gap-2 mt-4 md:mt-0 bg-stone-200 p-1 rounded-lg shadow-inner">
-            <button id="btn-tab-list" onclick="switchTab('list')" class="flex items-center gap-2 px-4 py-2 rounded-md transition-all bg-amber-700 text-white shadow-md">
-                <i data-lucide="library" class="w-4 h-4"></i>
-                <span class="hidden md:inline">Archivio</span>
-            </button>
-            <button id="btn-tab-add" onclick="switchTab('add')" class="flex items-center gap-2 px-4 py-2 rounded-md transition-all hover:bg-stone-300">
-                <i data-lucide="plus-circle" class="w-4 h-4"></i>
-                <span id="testo-btn-add" class="hidden md:inline">Nuova Scheda</span>
-            </button>
-        </nav>
+        <button onclick="switchSidebarTab('search')" class="p-2 hover:bg-stone-200 rounded-sm transition-colors text-stone-600 hover:text-stone-900" title="Ricerca">
+            <i data-lucide="search" class="w-5 h-5"></i>
+        </button>
+
+        <button onclick="switchSidebarTab('tags')" class="p-2 hover:bg-stone-200 rounded-sm transition-colors text-stone-600 hover:text-stone-900" title="Filtra per Tag">
+            <i data-lucide="bookmark" class="w-5 h-5"></i>
+        </button>
+
+        <div class="flex-1"></div>
+
+        <button id="btn-tab-add" onclick="switchTab('add')" class="p-2 hover:bg-amber-100 bg-amber-50 rounded-sm transition-colors text-amber-700 hover:text-amber-900 border border-amber-200 shadow-sm" title="Nuova Scheda">
+            <i data-lucide="plus" class="w-5 h-5"></i>
+        </button>
+        <button onclick="apriNewTypeModal()" class="p-2 hover:bg-stone-200 rounded-sm transition-colors text-stone-600 hover:text-stone-900 border border-stone-200 shadow-sm flex items-center gap-1 text-sm font-semibold" title="Nuovo Tipo Documento">
+            <i data-lucide="file-plus-2" class="w-4 h-4"></i> Tipo
+        </button>
     </header>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none"></div>
 
     <!-- Layout a due colonne -->
     <div class="flex-1 flex flex-col md:flex-row gap-6 overflow-hidden">
         
-        <!-- SIDEBAR: Albero Cartelle -->
-        <aside class="w-full md:w-72 shrink-0 bg-white/90 backdrop-blur-md shadow-xl border border-stone-200/50 rounded-xl flex flex-col h-full overflow-hidden">
-            <div class="p-4 border-b border-stone-200 bg-stone-50 flex justify-between items-center">
-                <h2 class="font-bold text-stone-700 flex items-center gap-2">
-                    <i data-lucide="folder-tree" class="w-5 h-5 text-amber-700"></i> Struttura
-                </h2>
-                <button onclick="aggiungiCartella()" class="text-amber-700 hover:text-amber-900 bg-amber-100 hover:bg-amber-200 p-1.5 rounded transition-colors" title="Crea nuova cartella">
-                    <i data-lucide="folder-plus" class="w-4 h-4"></i>
-                </button>
-            </div>
+        <!-- SIDEBAR: Pannelli Dinamici -->
+        <aside id="sidebar" class="w-full md:w-72 shrink-0 bg-white/90 backdrop-blur-md shadow-xl border border-stone-200/50 rounded-sm flex flex-col h-full overflow-hidden transition-all duration-300">
             
-            <div id="folder-list" class="flex-1 p-3 overflow-y-auto custom-scroll space-y-1">
-                <!-- Le cartelle verranno generate qui dal JS -->
+            <!-- PANNELLO CARTELLE -->
+            <div id="sidebar-folders" class="flex flex-col h-full">
+                <div class="p-4 border-b border-stone-200 bg-stone-50 flex justify-between items-center shrink-0">
+                    <h2 class="font-bold text-stone-700 flex items-center gap-2">
+                        <i data-lucide="folder-tree" class="w-5 h-5 text-amber-700"></i> Struttura
+                    </h2>
+                    <button onclick="aggiungiCartella()" class="text-amber-700 hover:text-amber-900 bg-amber-100 hover:bg-amber-200 p-1.5 rounded transition-colors" title="Crea nuova cartella">
+                        <i data-lucide="folder-plus" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                <div id="folder-list" class="flex-1 p-3 overflow-y-auto custom-scroll space-y-1">
+                    <!-- Le cartelle verranno generate qui dal JS -->
+                </div>
             </div>
+
+            <!-- PANNELLO RICERCA -->
+            <div id="sidebar-search" class="hidden-tab flex flex-col h-full">
+                <div class="p-4 border-b border-stone-200 bg-stone-50 shrink-0">
+                    <h2 class="font-bold text-stone-700 flex items-center gap-2 mb-3">
+                        <i data-lucide="search" class="w-5 h-5 text-amber-700"></i> Ricerca Globale
+                    </h2>
+                    <div class="relative flex items-center bg-white rounded-sm px-2 border border-stone-300 focus-within:border-amber-500 transition-colors shadow-sm">
+                        <i data-lucide="search" class="w-4 h-4 text-stone-400 shrink-0"></i>
+                        <input type="text" id="search-input" placeholder="Cerca in tutte le schede..." class="w-full bg-transparent border-none outline-none text-sm p-2 text-stone-700 placeholder-stone-400">
+                    </div>
+                </div>
+                <div class="p-2 bg-stone-100 border-b border-stone-200 text-xs font-semibold text-stone-500 shrink-0">SUGGERIMENTI</div>
+                <div id="search-suggestions" class="flex-1 overflow-y-auto custom-scroll">
+                    <!-- Suggerimenti dinamici -->
+                </div>
+            </div>
+
+            <!-- PANNELLO TAG -->
+            <div id="sidebar-tags" class="hidden-tab flex flex-col h-full">
+                <div class="p-4 border-b border-stone-200 bg-stone-50 shrink-0">
+                    <h2 class="font-bold text-stone-700 flex items-center gap-2 mb-3">
+                        <i data-lucide="bookmark" class="w-5 h-5 text-amber-700"></i> Filtro Tag
+                    </h2>
+                    <div class="relative flex items-center bg-white rounded-sm px-2 border border-stone-300 focus-within:border-amber-500 transition-colors shadow-sm">
+                        <i data-lucide="bookmark" class="w-4 h-4 text-stone-400 shrink-0"></i>
+                        <input type="text" id="global-tag-search" placeholder="Filtra la griglia..." class="w-full bg-transparent border-none outline-none text-sm p-2 text-stone-700 placeholder-stone-400" readonly>
+                    </div>
+                    <button onclick="document.getElementById('global-tag-search').value = ''; renderMain(); renderTagList();" class="text-xs text-stone-500 hover:text-red-600 mt-2 underline hidden" id="btn-clear-tag">Rimuovi filtro tag</button>
+                </div>
+                <div class="p-2 bg-stone-100 border-b border-stone-200 text-xs font-semibold text-stone-500 shrink-0">TAG DISPONIBILI</div>
+                <div id="tag-list" class="flex-1 overflow-y-auto custom-scroll p-2 flex flex-col gap-1">
+                    <!-- Lista Tag dinamica -->
+                </div>
+            </div>
+
         </aside>
 
         <!-- MAIN AREA: Contenuto Principale -->
-        <main class="flex-1 bg-white/90 backdrop-blur-md shadow-xl border border-stone-200/50 rounded-xl p-6 h-full overflow-y-auto custom-scroll">
+        <main class="flex-1 bg-white/90 backdrop-blur-md shadow-xl border border-stone-200/50 rounded-sm p-6 h-full overflow-y-auto custom-scroll">
             
             <!-- VISTA: LISTA MANOSCRITTI -->
             <div id="view-list" class="fade-in h-full flex flex-col">
@@ -73,18 +216,13 @@
                         </h2>
                         <span id="counter-results" class="text-sm text-stone-500 font-medium mt-1 block">Caricamento...</span>
                     </div>
-                    
-                    <div class="w-full max-w-sm relative">
-                        <i data-lucide="search" class="absolute left-3 top-2.5 text-stone-400 w-4 h-4"></i>
-                        <input type="text" id="search-input" placeholder="Cerca in questa cartella..." class="w-full pl-9 pr-3 py-2 text-sm border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 bg-stone-50">
-                    </div>
                 </div>
                 
                 <!-- Griglia -->
                 <div id="manoscritti-grid" class="grid grid-cols-1 xl:grid-cols-2 gap-5 pb-10"></div>
 
                 <!-- Stato Vuoto -->
-                <div id="empty-state" class="hidden text-center py-16 mt-10 bg-stone-50 rounded-lg border border-dashed border-stone-300">
+                <div id="empty-state" class="hidden text-center py-16 mt-10 bg-stone-50 rounded-sm border border-dashed border-stone-300">
                     <i data-lucide="file-box" class="w-12 h-12 text-stone-300 mx-auto mb-3"></i>
                     <p class="text-stone-500 italic text-lg mb-4">La cartella è vuota.</p>
                     <button onclick="eliminaCartellaAttuale()" id="btn-delete-folder" class="hidden items-center gap-2 text-red-600 hover:text-red-800 mx-auto text-sm font-medium">
@@ -100,65 +238,141 @@
                     <button id="btn-cancel-edit" onclick="cancelEdit()" class="hidden text-sm text-stone-500 hover:text-amber-700 underline">Annulla modifica</button>
                 </div>
                 
-                <form id="manoscritto-form" class="space-y-5 bg-stone-50 p-6 rounded-xl border border-stone-200 shadow-inner">
+                <form id="manoscritto-form" class="space-y-5 bg-stone-50 p-6 rounded-sm border border-stone-200 shadow-inner">
                     <input type="hidden" id="form-id">
                     <input type="hidden" id="form-allegato-nome"> 
                     <input type="hidden" id="form-allegato-tipo"> 
                     
-                    <!-- Selezione Cartella -->
-                    <div class="bg-amber-100/50 p-3 rounded-lg border border-amber-200 mb-4">
-                        <label class="text-sm font-bold text-amber-900 flex items-center gap-1 mb-1">
-                            <i data-lucide="folder" class="w-4 h-4"></i> Salva nella cartella:
-                        </label>
-                        <select id="form-cartella" class="w-full p-2 border border-amber-300 rounded-md bg-white text-stone-800 font-medium focus:ring-2 focus:ring-amber-500">
-                            <!-- Popolato da JS -->
-                        </select>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-4">
+                        <!-- Selezione Cartella -->
+                        <div class="bg-amber-100/50 p-3 rounded-sm border border-amber-200">
+                            <label class="text-sm font-bold text-amber-900 flex items-center gap-1 mb-1">
+                                <i data-lucide="folder" class="w-4 h-4"></i> Cartella:
+                            </label>
+                            <select id="form-cartella" class="w-full p-2 border border-amber-300 rounded-sm bg-white text-stone-800 font-medium focus:ring-2 focus:ring-amber-500">
+                                <!-- Popolato da JS -->
+                            </select>
+                        </div>
+                        
+                        <!-- Selezione Tipo Documento -->
+                        <div class="bg-stone-100/50 p-3 rounded-sm border border-stone-200">
+                            <label class="text-sm font-bold text-stone-700 flex items-center gap-1 mb-1">
+                                <i data-lucide="file-type" class="w-4 h-4"></i> Tipo Documento:
+                            </label>
+                            <select id="form-tipo-documento" onchange="renderDynamicFields()" class="w-full p-2 border border-stone-300 rounded-sm bg-white text-stone-800 font-medium focus:ring-2 focus:ring-amber-500"></select>
+                        </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div class="space-y-1">
-                            <label class="text-sm font-semibold text-stone-700 flex items-center gap-1"><i data-lucide="file-text" class="w-3.5 h-3.5 text-amber-700"></i> Segnatura *</label>
-                            <input required id="form-segnatura" placeholder="es. Plut. 40.1" class="w-full p-2 border border-stone-300 rounded-md bg-white">
-                        </div>
-                        <div class="space-y-1">
-                            <label class="text-sm font-semibold text-stone-700 flex items-center gap-1"><i data-lucide="user" class="w-3.5 h-3.5 text-amber-700"></i> Autore</label>
-                            <input id="form-autore" placeholder="es. Anonimo" class="w-full p-2 border border-stone-300 rounded-md bg-white">
+                    <!-- Identificativo Fisso -->
+                    <div class="space-y-1">
+                        <label class="text-sm font-semibold text-stone-700 flex items-center gap-1">Identificativo / Segnatura *</label>
+                        <input required id="form-segnatura" placeholder="Es. Plut. 40.1 o Atto 12" class="w-full p-2 border border-stone-300 rounded-sm bg-white">
+                    </div>
+
+                    <!-- Container Campi Dinamici -->
+                    <div id="form-dynamic-fields" class="space-y-5">
+                        <!-- Popolato da JS -->
+                    </div>
+
+                    <!-- Allegati -->
+                    <div class="space-y-1 border-t border-b border-stone-200 py-4 my-2 bg-stone-100/50 px-3 rounded-sm">
+                        <label class="text-sm font-semibold text-stone-800 flex items-center gap-2">Allega Documento (Foto o PDF)</label>
+                        <input type="file" id="form-allegato" accept="image/*,.pdf" class="w-full p-2 border border-stone-300 rounded-sm bg-white file:mr-4 file:py-1.5 file:px-3 file:rounded-sm file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 cursor-pointer">
+                        
+                        <img id="preview-immagine" onclick="if(this.src && !this.src.startsWith('blob:')) apriModal(this.src, 'img')" class="mt-3 max-h-48 hidden rounded-sm shadow-sm border border-stone-300 object-cover cursor-pointer hover:opacity-90 transition-opacity" title="Clicca per ingrandire">
+                        <div id="preview-pdf" onclick="if(document.getElementById('form-allegato-nome').value) apriPdfInterno(document.getElementById('form-allegato-nome').value)" class="mt-3 p-2 bg-red-50 hover:bg-red-100 border border-red-200 rounded-sm flex items-center justify-between text-red-800 hidden cursor-pointer transition-colors" title="Clicca per visualizzare il PDF">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="file-text" class="w-6 h-6 shrink-0"></i>
+                                <div>
+                                    <p class="text-xs font-semibold">PDF in archivio</p>
+                                    <p id="pdf-nome-file" class="text-[10px] text-stone-500 truncate max-w-[200px]"></p>
+                                </div>
+                            </div>
+                            <i data-lucide="external-link" class="w-4 h-4 text-red-600"></i>
                         </div>
                     </div>
 
                     <div class="space-y-1">
-                        <label class="text-sm font-semibold text-stone-700 flex items-center gap-1"><i data-lucide="book" class="w-3.5 h-3.5 text-amber-700"></i> Titolo / Contenuto</label>
-                        <input id="form-titolo" placeholder="Titolo dell'opera" class="w-full p-2 border border-stone-300 rounded-md bg-white">
-                    </div>
-
-                    <!-- Allegati -->
-                    <div class="space-y-1 border-t border-b border-stone-200 py-4 my-2 bg-stone-100/50 px-3 rounded-lg">
-                        <label class="text-sm font-semibold text-stone-800 flex items-center gap-2"><i data-lucide="paperclip" class="w-4 h-4 text-amber-700"></i> Allega Documento (Foto o PDF)</label>
-                        <input type="file" id="form-allegato" accept="image/*,.pdf" class="w-full p-2 border border-stone-300 rounded-md bg-white file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 cursor-pointer">
-                        
-                        <img id="preview-immagine" class="mt-3 max-h-48 hidden rounded-md shadow-sm border border-stone-300 object-cover">
-                        <div id="preview-pdf" class="mt-3 p-2 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-800 hidden">
-                            <i data-lucide="file-text" class="w-6 h-6 shrink-0"></i>
-                            <div>
-                                <p class="text-xs font-semibold">PDF pronto per l'archiviazione</p>
-                                <p id="pdf-nome-file" class="text-[10px] text-stone-500 truncate max-w-[200px]"></p>
-                            </div>
-                        </div>
+                        <label class="text-sm font-semibold text-stone-700">Tags (separati da virgola)</label>
+                        <input id="form-tags" placeholder="es. miniatura, secolo XII, pergamenaceo" class="w-full p-2 border border-stone-300 rounded-sm bg-white text-sm">
                     </div>
 
                     <div class="space-y-1">
                         <label class="text-sm font-semibold text-stone-700">Note Testuali / Codicologiche</label>
-                        <textarea id="form-note" rows="3" class="w-full p-2 border border-stone-300 rounded-md bg-white"></textarea>
+                        <textarea id="form-note" rows="3" class="w-full p-2 border border-stone-300 rounded-sm bg-white"></textarea>
                     </div>
 
                     <div class="pt-4">
-                        <button type="submit" id="btn-submit-form" class="w-full bg-amber-700 hover:bg-amber-800 text-white font-bold py-3 px-4 rounded-md flex justify-center items-center gap-2 text-lg">
-                            <i data-lucide="save" class="w-5 h-5"></i> <span id="testo-btn-submit">Salva Scheda</span>
+                        <button type="submit" id="btn-submit-form" class="w-full bg-amber-700 hover:bg-amber-800 text-white font-bold py-3 px-4 rounded-sm flex justify-center items-center gap-2 text-lg">
+                            <span id="testo-btn-submit">Salva Scheda</span>
                         </button>
                     </div>
                 </form>
             </div>
         </main>
+    </div>
+
+    <!-- VISTA: TRASCRIZIONE (A SCHERMO INTERO) -->
+    <div id="view-trascrizione" class="fixed inset-0 bg-stone-100 z-40 hidden-tab fade-in flex flex-col p-4 md:p-6 overflow-hidden">
+        <!-- Header Trascrizione -->
+        <header class="shrink-0 mb-4 flex items-center justify-between border-b-2 border-amber-700/20 pb-4 bg-white/50 backdrop-blur-md p-3 rounded-sm shadow-sm">
+            <div class="flex items-center gap-4">
+                <button onclick="chiudiTrascrizione()" class="text-stone-500 hover:text-amber-700 p-2 bg-stone-200 hover:bg-amber-100 rounded-sm transition-colors">
+                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                </button>
+                <div>
+                    <h2 id="trascrizione-title" class="text-2xl font-bold text-amber-900 flex items-center gap-2">
+                        Trascrizione
+                    </h2>
+                    <p id="trascrizione-subtitle" class="text-stone-500 text-sm italic"></p>
+                </div>
+            </div>
+            
+            <button onmousedown="event.preventDefault()" onclick="salvaTrascrizione()" class="flex items-center gap-2 px-6 py-2 rounded-sm transition-all bg-amber-700 hover:bg-amber-800 text-white shadow-md font-bold text-lg">
+                <span>Salva Trascrizione</span>
+            </button>
+        </header>
+
+        <!-- Split Screen Layout -->
+        <div class="flex-1 flex flex-col lg:flex-row gap-6 overflow-hidden">
+            
+            <!-- Left Panel: Text Editor -->
+            <div id="trascrizione-editor-panel" class="flex-1 flex flex-col bg-white shadow-xl border border-stone-200/50 rounded-sm overflow-hidden transition-all duration-300">
+                <!-- Toolbar -->
+                <div class="bg-stone-100 border-b border-stone-200 p-2 flex flex-wrap gap-2 items-center">
+                    <button onmousedown="event.preventDefault()" onclick="document.execCommand('bold', false, null)" class="p-2 text-stone-700 hover:bg-stone-300 rounded" title="Grassetto"><i data-lucide="bold" class="w-4 h-4"></i></button>
+                    <button onmousedown="event.preventDefault()" onclick="document.execCommand('italic', false, null)" class="p-2 text-stone-700 hover:bg-stone-300 rounded" title="Corsivo"><i data-lucide="italic" class="w-4 h-4"></i></button>
+                    <button onmousedown="event.preventDefault()" onclick="document.execCommand('underline', false, null)" class="p-2 text-stone-700 hover:bg-stone-300 rounded" title="Sottolineato"><i data-lucide="underline" class="w-4 h-4"></i></button>
+                    <div class="w-px h-6 bg-stone-300 mx-1"></div>
+                    <button onmousedown="event.preventDefault()" onclick="document.execCommand('insertUnorderedList', false, null)" class="p-2 text-stone-700 hover:bg-stone-300 rounded" title="Elenco puntato"><i data-lucide="list" class="w-4 h-4"></i></button>
+                    <button onmousedown="event.preventDefault()" onclick="document.execCommand('insertOrderedList', false, null)" class="p-2 text-stone-700 hover:bg-stone-300 rounded" title="Elenco numerato"><i data-lucide="list-ordered" class="w-4 h-4"></i></button>
+                    
+                    <div class="flex-1"></div>
+                    
+                    <!-- Pulsante Carica Immagine (visibile solo se manca l'allegato) -->
+                    <button id="btn-carica-allegato-trasc" onclick="document.getElementById('trasc-file-input').click()" class="hidden items-center gap-2 px-3 py-1.5 bg-amber-100 text-amber-800 hover:bg-amber-200 rounded text-sm font-semibold border border-amber-300 transition-colors">
+                        <i data-lucide="upload" class="w-4 h-4"></i> Aggiungi Immagine/PDF
+                    </button>
+                    <input type="file" id="trasc-file-input" class="hidden" accept="image/*,.pdf" onchange="caricaAllegatoTrascrizione(event)">
+                </div>
+                <!-- Area di Testo -->
+                <div class="flex-1 overflow-y-auto cursor-text p-6 bg-white" onclick="if(event.target === this) document.getElementById('trascrizione-editor').focus()">
+                    <div id="trascrizione-editor" contenteditable="true" class="min-h-full outline-none text-lg leading-relaxed text-stone-800 select-text" style="font-family: 'Georgia', serif; outline: none;"></div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Attachment Viewer -->
+            <div id="trascrizione-allegato-panel" class="flex-1 bg-stone-200/50 shadow-inner border border-stone-300/50 rounded-sm overflow-hidden relative flex justify-center items-center transition-all duration-300 hidden">
+                <img id="trasc-img-preview" class="max-w-full max-h-full object-contain hidden" />
+                <iframe id="trasc-pdf-preview" class="w-full h-full bg-white hidden" src=""></iframe>
+                <div id="trasc-no-allegato" class="text-center p-8 hidden">
+                    <i data-lucide="image-off" class="w-16 h-16 mx-auto text-stone-400 mb-4"></i>
+                    <p class="text-stone-500 font-medium">Nessun allegato disponibile per questa scheda.</p>
+                </div>
+            </div>
+            
+        </div>
+        <input type="hidden" id="trascrizione-id">
     </div>
 
     <!-- Script Application -->

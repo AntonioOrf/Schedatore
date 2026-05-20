@@ -1,6 +1,9 @@
 let appData = {
     cartelle: ['Generale'], 
-    manoscritti: []
+    manoscritti: [],
+    tipiDocumento: [
+        { id: 'manoscritto', nome: 'Manoscritto', campi: ['autore', 'titolo', 'note'] }
+    ]
 };
 let cartellaAttuale = 'Generale';
 
@@ -10,7 +13,7 @@ async function initData() {
         if (datiSalvati) {
             // Migrazione: Se il file vecchio era solo un array (lista piatta), lo converte nel nuovo formato
             if (Array.isArray(datiSalvati)) {
-                appData.manoscritti = datiSalvati.map(m => ({...m, cartella: 'Generale'}));
+                appData.manoscritti = datiSalvati.map(m => ({...m, cartella: 'Generale', tipoDocumento: 'manoscritto'}));
                 await window.apiBrowser.salvaDati(appData); // Salva subito il nuovo formato
             } else {
                 // Formato già corretto
@@ -20,6 +23,15 @@ async function initData() {
     }
     // Assicuriamoci che esista sempre almeno la cartella Generale
     if (!appData.cartelle.includes('Generale')) appData.cartelle.push('Generale');
+    
+    if (!appData.tipiDocumento) {
+        appData.tipiDocumento = [
+            { id: 'manoscritto', nome: 'Manoscritto', campi: ['autore', 'titolo', 'note'] }
+        ];
+    }
+    appData.manoscritti.forEach(m => {
+        if (!m.tipoDocumento) m.tipoDocumento = 'manoscritto';
+    });
 }
 
 async function salvaTutto() {

@@ -7,5 +7,6 @@ contextBridge.exposeInMainWorld('apiBrowser', {
     // Funzioni aggiornate per gestire qualsiasi tipo di allegato
     salvaAllegato: (filePath) => ipcRenderer.invoke('salva-allegato', filePath),
     leggiImmagine: (fileName) => ipcRenderer.invoke('leggi-immagine', fileName),
-    apriPdfEsterno: (fileName) => ipcRenderer.invoke('apri-pdf-esterno', fileName)
+    apriPdfEsterno: (fileName) => ipcRenderer.invoke('apri-pdf-esterno', fileName),
+    getAllegatoPath: (fileName) => ipcRenderer.invoke('get-allegato-path', fileName)
 });

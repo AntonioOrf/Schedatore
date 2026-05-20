@@ -2,7 +2,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     if(window.lucide) lucide.createIcons();
     await initData();
     
-    document.getElementById('search-input').addEventListener('input', renderMain);
+    // Primo render per popolare l'interfaccia all'avvio
+    if(typeof aggiornaSelectTipiDocumento === 'function') aggiornaSelectTipiDocumento();
+    renderSidebar();
+    renderMain();
+    
+    document.getElementById('search-input').addEventListener('input', () => { renderMain(); renderSearchSuggestions(); });
+    document.getElementById('global-tag-search').addEventListener('input', renderMain);
     document.getElementById('manoscritto-form').addEventListener('submit', handleFormSubmit);
     
     // Gestione Anteprime file
