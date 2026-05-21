@@ -43,7 +43,7 @@ function createWindow () {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
-    title: "Archivium Manuscriptorum",
+    title: "Schedatore",
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true, 
@@ -88,7 +88,7 @@ app.whenReady().then(() => {
     if (result && result.length > 0) {
       savedWorkspace = result[0];
     } else {
-      dialog.showErrorBox("Selezione Annullata", "È necessario selezionare una cartella di lavoro per poter avviare Archivium Manuscriptorum.");
+      dialog.showErrorBox("Selezione Annullata", "È necessario selezionare una cartella di lavoro per poter avviare Schedatore.");
       app.quit();
       return;
     }
@@ -217,7 +217,7 @@ ipcMain.handle('check-for-updates', async () => {
     const repoUrl = 'https://api.github.com/repos/AntonioOrf/Schedatore/releases/latest';
     
     const response = await fetch(repoUrl, {
-      headers: { 'User-Agent': 'Archivium-Manuscriptorum-App' }
+      headers: { 'User-Agent': 'Schedatore-App' }
     });
     
     if (!response.ok) return { error: 'Nessuna release trovata o GitHub irraggiungibile.' };

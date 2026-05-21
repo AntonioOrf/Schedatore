@@ -1,5 +1,5 @@
 {
-  "name": "archivium-manuscriptorum",
+  "name": "Schedatore",
   "version": "1.0.0",
   "description": "Gestionale per manoscritti medievali",
   "main": "src/main/main.js",
@@ -8,8 +8,8 @@
     "pack": "electron-builder --win"
   },
   "build": {
-    "appId": "com.antonioorf.archivium",
-    "productName": "Archivium Manuscriptorum",
+    "appId": "com.antonioorf.Schedatore",
+    "productName": "Schedatore",
     "directories": {
       "output": "dist"
     },
