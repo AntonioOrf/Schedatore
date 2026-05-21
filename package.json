@@ -15,11 +15,23 @@
       "output": "dist"
     },
     "win": {
-      "target": "portable"
+      "target": "nsis"
     },
-    "portable": {
-      "artifactName": "${productName} Portable.${ext}"
-    }
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "artifactName": "${productName} Setup.${ext}"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "AntonioOrf",
+        "repo": "Schedatore"
+      }
+    ]
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.3.0",
@@ -28,6 +40,7 @@
     "tailwindcss": "^4.3.0"
   },
   "dependencies": {
-    "archiver": "^8.0.0"
+    "archiver": "^8.0.0",
+    "electron-updater": "^6.8.3"
   }
 }

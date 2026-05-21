@@ -961,10 +961,38 @@ window.controllaAggiornamenti = async function(mostraAvvisi = true) {
             const banner = document.getElementById('update-banner');
             document.getElementById('update-banner-text').textContent = `È disponibile la nuova versione ${result.latestVersion} (attuale: ${result.currentVersion})`;
             
-            document.getElementById('btn-scarica-aggiornamento').onclick = () => {
-                window.apiBrowser.apriLinkEsterno(result.url);
-                nascondiBannerAggiornamento();
+            const btn = document.getElementById('btn-scarica-aggiornamento');
+            btn.textContent = "Scarica Aggiornamento";
+            btn.disabled = false;
+            
+            btn.onclick = async () => {
+                btn.disabled = true;
+                btn.textContent = "Avvio download...";
+                const res = await window.apiBrowser.downloadUpdate();
+                if (res && !res.success) {
+                    btn.textContent = "Errore Download";
+                    mostraMessaggio("Errore: " + res.error, "error");
+                }
             };
+            
+            if (!window._updateListenersSetup && window.apiBrowser.onUpdateProgress) {
+                window.apiBrowser.onUpdateProgress((progressObj) => {
+                    const perc = Math.round(progressObj.percent);
+                    btn.textContent = `Scaricamento: ${perc}%`;
+                });
+                
+                window.apiBrowser.onUpdateDownloaded(() => {
+                    btn.disabled = false;
+                    btn.textContent = "Riavvia e Installa";
+                    btn.classList.add('bg-green-600', 'hover:bg-green-700', 'text-white', 'border-transparent');
+                    btn.onclick = () => {
+                        btn.textContent = "Installazione...";
+                        btn.disabled = true;
+                        window.apiBrowser.installUpdate();
+                    };
+                });
+                window._updateListenersSetup = true;
+            }
             
             banner.classList.remove('hidden');
         } else {

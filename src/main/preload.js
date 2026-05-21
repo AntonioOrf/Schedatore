@@ -15,5 +15,11 @@ contextBridge.exposeInMainWorld('apiBrowser', {
     
     checkForUpdates: () => ipcRenderer.invoke('check-for-updates'),
     apriLinkEsterno: (url) => ipcRenderer.invoke('apri-link-esterno', url),
-    onExportProgress: (callback) => ipcRenderer.on('export-progress', (event, progress) => callback(progress))
+    onExportProgress: (callback) => ipcRenderer.on('export-progress', (event, progress) => callback(progress)),
+    
+    // Auto-updater
+    downloadUpdate: () => ipcRenderer.invoke('download-update'),
+    installUpdate: () => ipcRenderer.invoke('install-update'),
+    onUpdateProgress: (callback) => ipcRenderer.on('update-progress', (event, progressObj) => callback(progressObj)),
+    onUpdateDownloaded: (callback) => ipcRenderer.on('update-downloaded', () => callback())
 });

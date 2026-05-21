@@ -1,4 +1,5 @@
 const { app, BrowserWindow, ipcMain, shell, dialog, protocol, net } = require('electron');
+const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const fs = require('fs');
 const fsp = require('fs').promises;
@@ -212,25 +213,49 @@ ipcMain.handle('export-workspace-zip', async (event) => {
   });
 });
 
+// --- IPC AUTO-UPDATER ---
+autoUpdater.autoDownload = false; // L'utente deciderà quando scaricare
+
 ipcMain.handle('check-for-updates', async () => {
   try {
-    const repoUrl = 'https://api.github.com/repos/AntonioOrf/Schedatore/releases/latest';
-    
-    const response = await fetch(repoUrl, {
-      headers: { 'User-Agent': 'Schedatore-App' }
-    });
-    
-    if (!response.ok) return { error: 'Nessuna release trovata o GitHub irraggiungibile.' };
-
-    const data = await response.json();
-    const latestVersion = data.tag_name.replace(/^v/, '');
-    const currentVersion = app.getVersion().replace(/^v/, '');
-
-    const isNewer = latestVersion.localeCompare(currentVersion, undefined, { numeric: true, sensitivity: 'base' }) > 0;
-
-    return { updateAvailable: isNewer, latestVersion, currentVersion, url: data.html_url };
+    const result = await autoUpdater.checkForUpdates();
+    if (result && result.updateInfo) {
+      const isNewer = result.updateInfo.version !== app.getVersion();
+      return { 
+        updateAvailable: isNewer, 
+        latestVersion: result.updateInfo.version, 
+        currentVersion: app.getVersion()
+      };
+    }
+    return { updateAvailable: false, currentVersion: app.getVersion() };
   } catch (error) {
     return { error: error.message || "Errore sconosciuto nel controllo aggiornamenti." };
+  }
+});
+
+ipcMain.handle('download-update', async () => {
+  try {
+    await autoUpdater.downloadUpdate();
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('install-update', () => {
+  autoUpdater.quitAndInstall(false, true);
+});
+
+// Eventi inviati al renderer per l'interfaccia
+autoUpdater.on('download-progress', (progressObj) => {
+  if (mainWindow) {
+    mainWindow.webContents.send('update-progress', progressObj);
+  }
+});
+
+autoUpdater.on('update-downloaded', () => {
+  if (mainWindow) {
+    mainWindow.webContents.send('update-downloaded');
   }
 });
 
