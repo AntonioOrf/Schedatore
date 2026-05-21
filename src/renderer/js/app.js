@@ -12,6 +12,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const debouncedRenderMain = debounce(renderMain, 150);
     const debouncedRenderSuggestions = debounce(renderSearchSuggestions, 150);
 
+    // Controllo aggiornamenti silenzioso all'avvio
+    setTimeout(() => { if (typeof controllaAggiornamenti === 'function') controllaAggiornamenti(false); }, 2000);
+
     document.getElementById('search-input').addEventListener('input', () => {
         debouncedRenderMain();
         debouncedRenderSuggestions();
@@ -49,6 +52,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
     });
+    
 
     // Drag to resize Trascrizione panels
     const resizer = document.getElementById('trascrizione-resizer');

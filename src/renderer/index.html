@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Archivium Manuscriptorum</title>
+    <title>Schedatore</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: local-asset:; frame-src 'self' local-asset:; connect-src 'self' https://api.github.com;">
     <script src="vendor/tailwind.min.js"></script>
     <script src="vendor/lucide.min.js"></script>
     <link rel="stylesheet" href="css/style.css">
@@ -201,6 +202,15 @@
                             <i data-lucide="file-archive" class="w-4 h-4"></i> Esporta Backup in ZIP
                         </button>
                     </div>
+
+                    <!-- Sezione Aggiornamenti -->
+                    <div class="border-t border-stone-200 pt-6">
+                        <h4 class="font-semibold mb-1 flex items-center gap-2"><i data-lucide="download-cloud" class="w-4 h-4 text-amber-700"></i> Aggiornamenti</h4>
+                        <p class="text-sm text-stone-600 mb-3">Controlla se è disponibile una nuova versione del programma su GitHub.</p>
+                        <button onclick="controllaAggiornamenti(true)" class="btn btn-secondary">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i> Controlla Aggiornamenti
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="modal-header shrink-0 justify-end" style="border-top: 1px solid var(--color-border-light); border-bottom: none;">
@@ -208,6 +218,19 @@
             </div>
         </div>
     </div>
+
+    <!-- Banner Aggiornamenti -->
+    <div id="update-banner" class="hidden w-full bg-sky-600 text-white px-4 py-3 flex items-center justify-between shadow-md z-50 shrink-0 mb-6 rounded-sm border border-sky-700">
+        <div class="flex items-center gap-2 text-sm font-medium">
+            <i data-lucide="download-cloud" class="w-5 h-5"></i>
+            <span id="update-banner-text">È disponibile un nuovo aggiornamento!</span>
+        </div>
+        <div class="flex gap-2 shrink-0">
+            <button id="btn-scarica-aggiornamento" class="bg-white text-sky-700 hover:bg-sky-50 px-3 py-1.5 rounded-sm text-xs font-bold transition-colors shadow-sm">Scarica da GitHub</button>
+            <button onclick="nascondiBannerAggiornamento()" class="text-sky-100 hover:text-white px-2 py-1.5 transition-colors rounded-sm hover:bg-sky-700"><i data-lucide="x" class="w-4 h-4"></i></button>
+        </div>
+    </div>
+
 
     <!-- Header Fisso In Alto -->
     <header class="panel-glass shrink-0 mb-6 flex flex-wrap items-center gap-2 p-2">

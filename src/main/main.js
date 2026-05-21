@@ -1,18 +1,19 @@
-const { app, BrowserWindow, ipcMain, shell, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, dialog, protocol, net } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const fsp = require('fs').promises;
-const { exec } = require('child_process');
-
 const userDataPath = app.getPath('userData');
 const settingsPath = path.join(userDataPath, 'settings.json');
 
 let workspacePath = '';
 let dataFilePath = '';
 let attachmentsDirPath = '';
+let mainWindow = null;
 
-// Cache in-memory per le immagini già lette (evita rilettura ripetuta dal disco)
-const imageCache = new Map();
+// Protocollo custom per servire allegati
+protocol.registerSchemesAsPrivileged([
+  { scheme: 'local-asset', privileges: { secure: true, supportFetchAPI: true, bypassCSP: true } }
+]);
 
 function loadWorkspace() {
   if (fs.existsSync(settingsPath)) {
@@ -35,14 +36,11 @@ function initWorkspace(folderPath) {
     fs.mkdirSync(attachmentsDirPath, { recursive: true });
   }
 
-  // Quando si cambia workspace, svuota la cache immagini
-  imageCache.clear();
-  
   fs.writeFileSync(settingsPath, JSON.stringify({ workspacePath: folderPath }, null, 2));
 }
 
 function createWindow () {
-  const win = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     title: "Archivium Manuscriptorum",
@@ -54,11 +52,30 @@ function createWindow () {
     }
   });
 
-  win.setMenuBarVisibility(false);
-  win.loadFile(path.join(__dirname, '..', 'renderer', 'index.html'));
+  mainWindow.setMenuBarVisibility(false);
+  mainWindow.loadFile(path.join(__dirname, '..', 'renderer', 'index.html'));
+
+  // Sicurezza: blocca la navigazione interna
+  mainWindow.webContents.on('will-navigate', (event, url) => {
+    event.preventDefault();
+  });
+
+  // Sicurezza: blocca l'apertura di finestre popup
+  mainWindow.webContents.setWindowOpenHandler((details) => {
+    if (details.url.startsWith('http://') || details.url.startsWith('https://')) {
+      shell.openExternal(details.url);
+    }
+    return { action: 'deny' };
+  });
 }
 
 app.whenReady().then(() => {
+  protocol.handle('local-asset', (request) => {
+    let filePath = request.url.slice('local-asset://'.length);
+    filePath = decodeURIComponent(filePath);
+    return net.fetch('file://' + path.join(attachmentsDirPath, filePath));
+  });
+
   let savedWorkspace = loadWorkspace();
   
   if (!savedWorkspace) {
@@ -123,24 +140,6 @@ ipcMain.handle('salva-allegato', async (event, sourcePath) => {
   }
 });
 
-ipcMain.handle('leggi-immagine', async (event, fileName) => {
-  try {
-    // Restituisce il risultato dalla cache se già letto in precedenza
-    if (imageCache.has(fileName)) {
-      return imageCache.get(fileName);
-    }
-    const p = path.join(attachmentsDirPath, fileName);
-    if (fs.existsSync(p)) {
-      const buffer = await fsp.readFile(p);
-      const ext = path.extname(fileName).substring(1);
-      const dataUrl = `data:image/${ext};base64,${buffer.toString('base64')}`;
-      imageCache.set(fileName, dataUrl);
-      return dataUrl;
-    }
-  } catch (error) { console.error(error); }
-  return null;
-});
-
 // Apri i PDF esternamente all'applicazione
 ipcMain.handle('apri-pdf-esterno', async (event, fileName) => {
   try {
@@ -188,21 +187,55 @@ ipcMain.handle('export-workspace-zip', async (event) => {
   if (result.canceled || !result.filePath) return { success: false, canceled: true };
   
   const destPath = result.filePath;
+  const archiverModule = await import('archiver');
   return new Promise((resolve) => {
-    let command;
-    if (process.platform === 'win32') {
-      const safeWorkspacePath = workspacePath.replace(/'/g, "''");
-      const safeDestPath = destPath.replace(/'/g, "''");
-      command = `powershell.exe -NoProfile -Command "Compress-Archive -Path '${safeWorkspacePath}\\*' -DestinationPath '${safeDestPath}' -Force"`;
-    } else {
-      const safeWorkspacePathMac = workspacePath.replace(/"/g, '\\"');
-      const safeDestPathMac = destPath.replace(/"/g, '\\"');
-      command = `cd "${safeWorkspacePathMac}" && zip -r "${safeDestPathMac}" .`;
-    }
-    
-    exec(command, (error) => {
-      if (error) resolve({ success: false, error: error.message });
-      else resolve({ success: true, path: destPath });
+    const output = fs.createWriteStream(destPath);
+    const archive = new archiverModule.ZipArchive({ zlib: { level: 9 } });
+
+    output.on('close', function() {
+      resolve({ success: true, path: destPath });
     });
+    
+    archive.on('error', function(err) {
+      resolve({ success: false, error: err.message });
+    });
+
+    archive.on('progress', (progress) => {
+      if (mainWindow) {
+        mainWindow.webContents.send('export-progress', progress);
+      }
+    });
+
+    archive.pipe(output);
+    archive.directory(workspacePath, false);
+    archive.finalize();
   });
+});
+
+ipcMain.handle('check-for-updates', async () => {
+  try {
+    const repoUrl = 'https://api.github.com/repos/AntonioOrf/Schedatore/releases/latest';
+    
+    const response = await fetch(repoUrl, {
+      headers: { 'User-Agent': 'Archivium-Manuscriptorum-App' }
+    });
+    
+    if (!response.ok) return { error: 'Nessuna release trovata o GitHub irraggiungibile.' };
+
+    const data = await response.json();
+    const latestVersion = data.tag_name.replace(/^v/, '');
+    const currentVersion = app.getVersion().replace(/^v/, '');
+
+    const isNewer = latestVersion.localeCompare(currentVersion, undefined, { numeric: true, sensitivity: 'base' }) > 0;
+
+    return { updateAvailable: isNewer, latestVersion, currentVersion, url: data.html_url };
+  } catch (error) {
+    return { error: error.message || "Errore sconosciuto nel controllo aggiornamenti." };
+  }
+});
+
+ipcMain.handle('apri-link-esterno', async (event, url) => {
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    await shell.openExternal(url);
+  }
 });

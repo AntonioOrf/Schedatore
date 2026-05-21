@@ -4,9 +4,27 @@
   "description": "Gestionale per manoscritti medievali",
   "main": "src/main/main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "pack": "electron-builder --win"
+  },
+  "build": {
+    "appId": "com.antonioorf.archivium",
+    "productName": "Archivium Manuscriptorum",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "portable"
+    },
+    "portable": {
+      "artifactName": "${productName} Portable.${ext}"
+    }
   },
   "devDependencies": {
-    "electron": "^29.0.0"
+    "electron": "^29.0.0",
+    "electron-builder": "^26.8.1"
+  },
+  "dependencies": {
+    "archiver": "^8.0.0"
   }
 }

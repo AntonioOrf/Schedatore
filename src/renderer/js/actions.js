@@ -429,18 +429,17 @@ window.cambiaAllegatoTrascrizione = async function(nome, tipo, index) {
     imgPreview.src = '';
     pdfPreview.src = '';
     
+    if (!nome) {
+        noAllegato.classList.remove('hidden');
+        return;
+    }
+
     if (tipo === 'pdf') {
-        const filePath = await window.apiBrowser.getAllegatoPath(nome);
-        pdfPreview.src = 'file:///' + filePath.replace(/\\/g, '/');
+        pdfPreview.src = 'local-asset://' + encodeURIComponent(nome);
         pdfPreview.classList.remove('hidden');
     } else {
-        const b64 = await window.apiBrowser.leggiImmagine(nome);
-        if (b64) {
-            imgPreview.src = b64;
-            imgPreview.classList.remove('hidden');
-        } else {
-            noAllegato.classList.remove('hidden');
-        }
+        imgPreview.src = 'local-asset://' + encodeURIComponent(nome);
+        imgPreview.classList.remove('hidden');
     }
 };
 
@@ -755,8 +754,37 @@ window.apriImpostazioni = async function() {
 
 window.esportaBackupZip = async function() {
     if (window.apiBrowser && window.apiBrowser.exportWorkspaceZip) {
-        mostraMessaggio("Creazione del backup in corso... Potrebbe volerci qualche minuto.", "info");
+        mostraMessaggio("Inizializzazione backup...", "info");
+        
+        const progDiv = document.createElement('div');
+        progDiv.className = 'fixed top-4 left-1/2 -translate-x-1/2 bg-stone-900 text-white px-6 py-4 rounded-sm shadow-2xl z-50 min-w-[300px] border border-stone-700 text-center flex flex-col gap-2';
+        progDiv.innerHTML = `
+            <div class="font-bold text-sm">Esportazione in corso...</div>
+            <div class="w-full bg-stone-700 h-2 rounded-full overflow-hidden">
+                <div id="export-progress-bar" class="bg-amber-500 h-full w-0 transition-all duration-300"></div>
+            </div>
+            <div id="export-progress-text" class="text-xs text-stone-300">Calcolo...</div>
+        `;
+        document.body.appendChild(progDiv);
+
+        if (!window._exportProgressListener && window.apiBrowser.onExportProgress) {
+            window.apiBrowser.onExportProgress((progress) => {
+                const bar = document.getElementById('export-progress-bar');
+                const text = document.getElementById('export-progress-text');
+                if (bar && text && progress.entries) {
+                    const proc = progress.entries.processed;
+                    const total = progress.entries.total;
+                    const perc = total > 0 ? Math.round((proc / total) * 100) : 0;
+                    bar.style.width = perc + '%';
+                    text.textContent = `${proc} di ${total} file elaborati (${perc}%)`;
+                }
+            });
+            window._exportProgressListener = true;
+        }
+
         const result = await window.apiBrowser.exportWorkspaceZip();
+        progDiv.remove();
+
         if (result.success) {
             mostraMessaggio("Backup esportato con successo!", "success");
         } else if (!result.canceled) {
@@ -773,4 +801,33 @@ window.cambiaCartellaLavoro = async function() {
     if (window.apiBrowser && window.apiBrowser.changeWorkspace) {
         await window.apiBrowser.changeWorkspace();
     }
+}
+
+window.controllaAggiornamenti = async function(mostraAvvisi = true) {
+    if (window.apiBrowser && window.apiBrowser.checkForUpdates) {
+        if (mostraAvvisi) mostraMessaggio("Controllo aggiornamenti in corso...", "info");
+        
+        const result = await window.apiBrowser.checkForUpdates();
+
+        if (result.error) {
+            if (mostraAvvisi) mostraMessaggio("Errore: " + result.error, "error");
+        } else if (result.updateAvailable) {
+            // Mostra il banner non-intrusivo
+            const banner = document.getElementById('update-banner');
+            document.getElementById('update-banner-text').textContent = `È disponibile la nuova versione ${result.latestVersion} (attuale: ${result.currentVersion})`;
+            
+            document.getElementById('btn-scarica-aggiornamento').onclick = () => {
+                window.apiBrowser.apriLinkEsterno(result.url);
+                nascondiBannerAggiornamento();
+            };
+            
+            banner.classList.remove('hidden');
+        } else {
+            if (mostraAvvisi) mostraMessaggio(`Hai già l'ultima versione (${result.currentVersion}).`, "success");
+        }
+    }
+}
+
+window.nascondiBannerAggiornamento = function() {
+    document.getElementById('update-banner').classList.add('hidden');
 }

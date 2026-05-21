@@ -353,8 +353,10 @@ function renderMain() {
 
             div.innerHTML = `
                 <div>
-                    <h3 class="card-title" title="${m.segnatura}">${m.segnatura}</h3>
-                    <span class="card-badge">${tipoDoc ? tipoDoc.nome : 'Documento'}</span>
+                    <div class="flex justify-between items-start gap-2 mb-2">
+                        <h3 class="card-title mb-0" title="${m.segnatura}">${m.segnatura}</h3>
+                        <span class="card-badge shrink-0 mt-0">${tipoDoc ? tipoDoc.nome : 'Documento'}</span>
+                    </div>
                     <div class="space-y-1 text-sm">
                         ${infoHTML}
                         ${tagsHTML}
@@ -422,8 +424,7 @@ function switchTab(tab) {
 
 window.apriPdfInterno = async function(fileName) {
     if (window.apiBrowser) {
-        const filePath = await window.apiBrowser.getAllegatoPath(fileName);
-        apriModal(filePath, 'pdf');
+        apriModal('local-asset://' + encodeURIComponent(fileName), 'pdf');
     }
 }
 
@@ -434,7 +435,7 @@ function apriModal(sorgente, tipo = 'img') {
     modalPdf.classList.add('hidden');
 
     if (tipo === 'pdf') {
-        modalPdf.src = 'file:///' + sorgente.replace(/\\/g, '/');
+        modalPdf.src = sorgente;
         modalPdf.classList.remove('hidden');
     } else {
         modalImg.src = sorgente;
@@ -688,7 +689,7 @@ window.renderAllegatiForm = async function(allegatiList) {
             `;
         } else {
             let src = '';
-            if (window.apiBrowser) src = await window.apiBrowser.leggiImmagine(al.nome);
+            if (window.apiBrowser) src = 'local-asset://' + encodeURIComponent(al.nome);
             content = `
                 <div class="flex items-center gap-2 truncate cursor-pointer hover:opacity-80 flex-1" onclick="apriModal('${src}', 'img')">
                     <i data-lucide="grip-vertical" class="w-4 h-4 text-stone-400 shrink-0"></i>
@@ -793,7 +794,7 @@ window.apriModalDocumenti = async function(id) {
             `;
         } else {
             let src = '';
-            if (window.apiBrowser) src = await window.apiBrowser.leggiImmagine(al.nome);
+            if (window.apiBrowser) src = 'local-asset://' + encodeURIComponent(al.nome);
             previewHtml = `
                 <div onclick="apriModal('${src}', 'img')" class="w-full h-32 bg-stone-100 flex justify-center items-center rounded-sm cursor-pointer hover:opacity-80 transition-opacity mb-3 border border-stone-200 overflow-hidden relative">
                      <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex justify-center items-center text-white transition-opacity"><i data-lucide="zoom-in"></i></div>
