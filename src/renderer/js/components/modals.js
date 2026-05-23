@@ -173,3 +173,45 @@ window.rinominaAllegatoDaModal = function(id, index) {
     });
 }
 
+window.mostraBottomConfirm = function(testo, onConfirmCallback, actionId = null) {
+    if (actionId && appData.skipConfirmations && appData.skipConfirmations[actionId]) {
+        if (onConfirmCallback) onConfirmCallback();
+        return;
+    }
+
+    const banner = document.getElementById('bottom-confirm-banner');
+    document.getElementById('bottom-confirm-text').textContent = testo;
+    const btnYes = document.getElementById('btn-bottom-confirm-yes');
+    
+    const checkboxContainer = document.getElementById('bottom-confirm-checkbox-container');
+    const checkbox = document.getElementById('bottom-confirm-skip');
+    
+    if (actionId) {
+        checkboxContainer.classList.remove('hidden');
+        checkbox.checked = false;
+    } else {
+        checkboxContainer.classList.add('hidden');
+    }
+    
+    // Rimuovi vecchi listener clonando il pulsante
+    const newBtn = btnYes.cloneNode(true);
+    btnYes.parentNode.replaceChild(newBtn, btnYes);
+    
+    newBtn.onclick = async () => {
+        window.chiudiBottomConfirm();
+        if (actionId && checkbox.checked) {
+            appData.skipConfirmations = appData.skipConfirmations || {};
+            appData.skipConfirmations[actionId] = true;
+            await salvaTutto();
+        }
+        if (onConfirmCallback) onConfirmCallback();
+    };
+    
+    banner.classList.remove('hidden-tab');
+}
+
+window.chiudiBottomConfirm = function() {
+    const banner = document.getElementById('bottom-confirm-banner');
+    banner.classList.add('hidden-tab');
+}
+

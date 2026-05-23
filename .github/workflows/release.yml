@@ -3,28 +3,29 @@ name: Build and Release
 on:
   push:
     tags:
-      - 'v*.*.*' # La Action si avvierà solo quando crei un tag (es. v1.0.5)
+      - 'v*' # Si attiva solo al push di un tag che inizia per v (es. v1.0.8)
+
+permissions:
+  contents: write # Permesso necessario per caricare file nella sezione Releases
 
 jobs:
   release:
-    runs-on: windows-latest # Compila su un server Windows
-    permissions:
-      contents: write
+    runs-on: windows-latest
 
     steps:
-      - name: Check out Git repository
+      - name: Checkout del codice
         uses: actions/checkout@v4
 
-      - name: Install Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
 
-      - name: Install Dependencies
-        run: npm install
+      - name: Installa le dipendenze
+        run: npm ci
 
-      - name: Build and Publish Release
-        env:
-          # Questo token è fornito automaticamente da GitHub, non devi crearlo tu
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Costruisci e pubblica la Release
         run: npm run publish-app
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -24,8 +24,10 @@ async function initData() {
             }
         }
     }
-    // Assicuriamoci che esista sempre almeno la cartella Generale
-    if (!appData.cartelle.includes('Generale')) appData.cartelle.push('Generale');
+    // Assicuriamoci che esista sempre almeno una cartella
+    if (!appData.cartelle || appData.cartelle.length === 0) {
+        appData.cartelle = ['Generale'];
+    }
     
     if (!appData.tipiDocumento) {
         appData.tipiDocumento = [];

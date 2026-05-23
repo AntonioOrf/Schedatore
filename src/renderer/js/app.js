@@ -44,8 +44,8 @@ async function avviaApp() {
     const debouncedRenderMain = debounce(renderMain, 150);
     const debouncedRenderSuggestions = debounce(renderSearchSuggestions, 150);
 
-    // Controllo aggiornamenti visibile all'avvio
-    setTimeout(() => { if (typeof window.controllaAggiornamenti === 'function') window.controllaAggiornamenti(true); }, 2000);
+    // Controlla aggiornamenti in background all'avvio senza mostrare popup se è già aggiornato
+    setTimeout(() => { if (typeof window.controllaAggiornamenti === 'function') window.controllaAggiornamenti(false); }, 2000);
 
     document.getElementById('search-input').addEventListener('input', () => {
         debouncedRenderMain();

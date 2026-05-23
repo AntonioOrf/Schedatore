@@ -284,6 +284,29 @@
         </div>
     </div>
 
+    <!-- Banner Conferma (Centrato) -->
+    <div id="bottom-confirm-banner" class="modal-overlay hidden-tab z-[110]">
+        <div class="modal-window max-w-sm">
+            <div class="modal-header" style="background-color: var(--color-danger-light); border-color: #fca5a5;">
+                <i data-lucide="alert-triangle" class="w-6 h-6 text-red-600"></i>
+                <h3 class="modal-title" style="color: var(--color-danger-hover); width: 100%;">
+                    Conferma Azione
+                </h3>
+            </div>
+            <div class="modal-body">
+                <p id="bottom-confirm-text" class="font-medium mb-4 text-center">Sei sicuro?</p>
+                <div id="bottom-confirm-checkbox-container" class="mb-4 flex items-center justify-center gap-2 hidden">
+                    <input type="checkbox" id="bottom-confirm-skip" class="w-4 h-4 text-amber-600 border-stone-300 rounded focus:ring-amber-500">
+                    <label for="bottom-confirm-skip" class="text-sm text-stone-600 cursor-pointer select-none">Non chiederlo più</label>
+                </div>
+                <div class="modal-footer justify-center mt-2">
+                    <button onclick="window.chiudiBottomConfirm()" class="btn btn-ghost text-sm">Annulla</button>
+                    <button id="btn-bottom-confirm-yes" class="btn btn-danger text-sm shadow-md">Sì, procedi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Header Fisso In Alto -->
     <header class="panel-glass shrink-0 mb-6 flex flex-wrap items-center gap-2 p-2">

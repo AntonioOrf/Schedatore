@@ -256,13 +256,13 @@ window.eliminaTipoDocumento = function(id) {
         return;
     }
     
-    if (confirm("Sei sicuro di voler eliminare questo modello?")) {
+    window.mostraBottomConfirm("Sei sicuro di voler eliminare questo modello?", async () => {
         appData.tipiDocumento = appData.tipiDocumento.filter(t => t.id !== id);
-        salvaTutto();
+        await salvaTutto();
         aggiornaSelectTipiDocumento();
         apriManageTypesModal(); // Ricarica la lista
         mostraMessaggio("Modello eliminato con successo.", "success");
-    }
+    }, 'delete_type');
 };
 
 window.modificaTipoDocumento = function(id) {

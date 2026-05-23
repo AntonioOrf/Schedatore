@@ -34,7 +34,7 @@ function renderSidebar() {
         div.className = "flex flex-col";
 
         const riga = document.createElement('div');
-        riga.className = `flex items-center gap-1 p-1.5 rounded-sm cursor-pointer transition-colors text-sm ${isAttuale ? 'bg-amber-100/80 text-amber-900 font-bold border border-amber-200 shadow-sm' : 'text-stone-600 hover:bg-stone-200 hover:text-stone-900'}`;
+        riga.className = `group flex items-center gap-1 p-1.5 rounded-sm cursor-pointer transition-colors text-sm sidebar-row ${isAttuale ? 'active' : ''}`;
         riga.style.paddingLeft = `${profondita * 1.25 + 0.25}rem`;
 
         // Drag and Drop Logic
@@ -70,7 +70,7 @@ function renderSidebar() {
         spanToggle.className = "w-5 h-5 flex items-center justify-center shrink-0";
         if (hasChildren) {
             const isExpanded = window.cartelleEspanse.has(fullPath);
-            spanToggle.innerHTML = `<i data-lucide="${isExpanded ? 'chevron-down' : 'chevron-right'}" class="w-4 h-4 text-stone-500 hover:text-amber-700 transition-colors"></i>`;
+            spanToggle.innerHTML = `<i data-lucide="${isExpanded ? 'chevron-down' : 'chevron-right'}" class="w-4 h-4 sidebar-chevron transition-colors"></i>`;
             spanToggle.onclick = (e) => {
                 e.stopPropagation();
                 if (isExpanded) window.cartelleEspanse.delete(fullPath);
@@ -83,10 +83,37 @@ function renderSidebar() {
         const icona = isAttuale ? 'folder-open' : 'folder';
         const testo = document.createElement('span');
         testo.className = "truncate flex items-center gap-1.5 flex-1 select-none";
-        testo.innerHTML = `<i data-lucide="${icona}" class="w-4 h-4 shrink-0 ${isAttuale ? 'text-amber-600' : 'text-stone-400'}"></i> ${nodeName}`;
+        testo.innerHTML = `<i data-lucide="${icona}" class="w-4 h-4 shrink-0 sidebar-icon"></i> ${nodeName}`;
 
         riga.appendChild(spanToggle);
         riga.appendChild(testo);
+        
+        const actionContainer = document.createElement('div');
+        actionContainer.className = "opacity-0 group-hover:opacity-100 flex items-center transition-all";
+        
+        const btnRename = document.createElement('button');
+        btnRename.className = "p-1 rounded mr-1 sidebar-action-btn rename";
+        btnRename.innerHTML = `<i data-lucide="pencil" class="w-3.5 h-3.5"></i>`;
+        btnRename.onclick = (e) => {
+            e.stopPropagation();
+            if (typeof window.rinominaCartellaDaSidebar === 'function') {
+                window.rinominaCartellaDaSidebar(fullPath);
+            }
+        };
+        actionContainer.appendChild(btnRename);
+
+        const btnDelete = document.createElement('button');
+        btnDelete.className = "p-1 rounded sidebar-action-btn delete";
+        btnDelete.innerHTML = `<i data-lucide="trash-2" class="w-3.5 h-3.5"></i>`;
+        btnDelete.onclick = (e) => {
+            e.stopPropagation();
+            if (typeof window.eliminaCartellaDaSidebar === 'function') {
+                window.eliminaCartellaDaSidebar(fullPath);
+            }
+        };
+        actionContainer.appendChild(btnDelete);
+        
+        riga.appendChild(actionContainer);
 
         riga.onclick = () => {
             cartellaAttuale = fullPath;
