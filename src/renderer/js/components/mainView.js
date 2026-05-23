@@ -1,10 +1,25 @@
+// Helper per la ricerca profonda
+function objectContainsString(obj, str) {
+    if (!obj) return false;
+    if (typeof obj === 'string' || typeof obj === 'number') {
+        return obj.toString().toLowerCase().includes(str);
+    }
+    if (Array.isArray(obj)) {
+        return obj.some(item => objectContainsString(item, str));
+    }
+    if (typeof obj === 'object') {
+        return Object.values(obj).some(val => objectContainsString(val, str));
+    }
+    return false;
+}
+
 // renderMain è sincrona: non usa await, non deve essere async
 function renderMain() {
     const grid = document.getElementById('manoscritti-grid');
-    const search = document.getElementById('search-input').value.toLowerCase();
-    const tagSearch = (document.getElementById('global-tag-search').value || '').toLowerCase();
-
-    const isGlobalSearch = search !== '' || tagSearch !== '';
+    const search = document.getElementById('search-input').value.trim().toLowerCase();
+    
+    window.activeTags = window.activeTags || new Set();
+    const isGlobalSearch = search !== '' || window.activeTags.size > 0;
 
     if (isGlobalSearch) {
         document.getElementById('titolo-cartella-attuale').textContent = "Risultati Ricerca Globale";
@@ -13,16 +28,24 @@ function renderMain() {
         document.getElementById('titolo-cartella-attuale').textContent = partiTitolo[partiTitolo.length - 1];
     }
 
-    // Filtro per Cartella (se non globale) E per Ricerca E per Tag
+    // Filtro per Cartella (se non globale) E per Ricerca Profonda E per (Multi) Tag
     const filtered = appData.manoscritti.filter(m => {
         const matchCartella = isGlobalSearch ? true : m.cartella === window.cartellaAttuale;
 
-        const tipoDoc = appData.tipiDocumento.find(t => t.id === (m.tipoDocumento || 'manoscritto'));
-        const campiPossibili = tipoDoc ? tipoDoc.campi : ['titolo', 'autore', 'note'];
-        const matchSearch = search === '' || (m.segnatura||'').toLowerCase().includes(search) || campiPossibili.some(campo => (m[campo] || '').toString().toLowerCase().includes(search));
+        // Ricerca veramente globale su ogni campo (testo, metadati, trascrizioni, allegati)
+        const matchSearch = search === '' || objectContainsString(m, search);
 
+        // Controllo tag (AND logico: il manoscritto deve avere TUTTI i tag selezionati)
         const mTags = (m.tags || '').toLowerCase();
-        const matchTag = tagSearch === '' || mTags.includes(tagSearch);
+        let matchTag = true;
+        if (window.activeTags.size > 0) {
+            for (const tag of window.activeTags) {
+                if (!mTags.includes(tag)) {
+                    matchTag = false;
+                    break;
+                }
+            }
+        }
 
         return matchCartella && matchSearch && matchTag;
     });
@@ -54,6 +77,7 @@ function renderMain() {
         for (const m of filtered) {
             const div = document.createElement('div');
             div.className = "card-scheda";
+            div.id = 'card-' + m.id;
 
             // Logica Drag and Drop
             div.draggable = true;
@@ -169,8 +193,37 @@ function switchTab(tab) {
     if (typeof window.salvaStatoPosizione === 'function') window.salvaStatoPosizione();
 }
 
+function extractSnippet(val, search) {
+    if (!val) return null;
+    const strVal = val.toString();
+    
+    // Rimuovi tag HTML per sicurezza
+    const temp = document.createElement('div');
+    temp.innerHTML = strVal;
+    const cleanText = temp.textContent || temp.innerText || "";
+    
+    const lowerStr = cleanText.toLowerCase();
+    const idx = lowerStr.indexOf(search);
+    
+    if (idx !== -1) {
+        // Estrai una frase più lunga
+        const start = Math.max(0, idx - 60);
+        const end = Math.min(cleanText.length, idx + search.length + 80);
+        let snippet = cleanText.substring(start, end).trim();
+        
+        if (start > 0) snippet = '...' + snippet;
+        if (end < cleanText.length) snippet = snippet + '...';
+
+        // Evidenzia la parola trovata
+        const regex = new RegExp(`(${search.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&')})`, 'gi');
+        snippet = snippet.replace(regex, '<span class="bg-amber-200 text-amber-900 font-bold px-0.5 rounded">$1</span>');
+        return snippet;
+    }
+    return null;
+}
+
 function renderSearchSuggestions() {
-    const search = document.getElementById('search-input').value.toLowerCase();
+    const search = document.getElementById('search-input').value.trim().toLowerCase();
     const container = document.getElementById('search-suggestions');
     container.innerHTML = '';
 
@@ -179,33 +232,69 @@ function renderSearchSuggestions() {
         return;
     }
 
-    const matches = appData.manoscritti.filter(m =>
-        (m.segnatura||'').toLowerCase().includes(search) ||
-        (m.titolo||'').toLowerCase().includes(search) ||
-        (m.autore||'').toLowerCase().includes(search)
-    ).slice(0, 10); // Massimo 10 suggerimenti
+    const matches = [];
+    for (const m of appData.manoscritti) {
+        let matchFound = null;
+        const keys = Object.keys(m);
+        
+        // Ordiniamo le chiavi per dare priorità a segnatura e titolo
+        keys.sort((a, b) => {
+            if (a === 'segnatura') return -1;
+            if (b === 'segnatura') return 1;
+            if (a === 'titolo') return -1;
+            if (b === 'titolo') return 1;
+            return 0;
+        });
+
+        for (const key of keys) {
+            if (key === 'id' || key === 'cartella' || key === 'allegati' || key === 'tipoDocumento') continue;
+            const snippet = extractSnippet(m[key], search);
+            if (snippet) {
+                let readableKey = key.charAt(0).toUpperCase() + key.slice(1);
+                matchFound = { item: m, key: readableKey, snippet: snippet };
+                break; // Mostriamo solo il primo campo in cui matcha per questo documento
+            }
+        }
+        if (matchFound) {
+            matches.push(matchFound);
+        }
+        if (matches.length >= 15) break; // Massimo 15 suggerimenti
+    }
 
     if (matches.length === 0) {
-        container.innerHTML = '<div class="p-4 text-xs text-stone-400 italic text-center">Nessun match esatto nei titoli/autori.</div>';
+        container.innerHTML = '<div class="p-4 text-xs text-stone-400 italic text-center">Nessun match trovato nel database.</div>';
         return;
     }
 
     const fragment = document.createDocumentFragment();
-    matches.forEach(m => {
+    matches.forEach(match => {
         const div = document.createElement('div');
         div.className = "p-2 border-b border-stone-200 hover:bg-amber-50 cursor-pointer transition-colors";
         div.onclick = () => {
-            document.getElementById('search-input').value = m.segnatura;
-            renderMain();
-            renderSearchSuggestions();
+            // Scorriamo fino alla scheda nella griglia a destra
+            const cardId = 'card-' + match.item.id;
+            const targetCard = document.getElementById(cardId);
+            if (targetCard) {
+                targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Evidenziazione temporanea per indicare quale scheda è stata trovata
+                targetCard.style.transition = "box-shadow 0.3s ease, border-color 0.3s ease";
+                const oldShadow = targetCard.style.boxShadow;
+                const oldBorder = targetCard.style.borderColor;
+                targetCard.style.boxShadow = "0 0 0 4px rgba(251, 191, 36, 0.4)";
+                targetCard.style.borderColor = "#f59e0b";
+                setTimeout(() => {
+                    targetCard.style.boxShadow = oldShadow;
+                    targetCard.style.borderColor = oldBorder;
+                }, 1500);
+            }
         };
         div.innerHTML = `
-            <div class="text-xs font-bold text-stone-700 truncate">${m.segnatura}</div>
-            ${m.titolo ? `<div class="text-[10px] text-stone-500 truncate mt-0.5"><i>${m.titolo}</i></div>` : ''}
-            ${m.autore ? `<div class="text-[10px] text-stone-500 truncate mt-0.5"><b>Autore:</b> ${m.autore}</div>` : ''}
+            <div class="text-xs font-bold text-stone-800 truncate mb-1">${match.item.segnatura || match.item.titolo || 'Senza Titolo'}</div>
+            <div class="text-[10px] text-stone-600 leading-tight">
+                <span class="font-semibold text-amber-700 capitalize">${match.key}:</span> ${match.snippet}
+            </div>
         `;
         fragment.appendChild(div);
     });
     container.appendChild(fragment);
 }
-

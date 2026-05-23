@@ -220,25 +220,31 @@ function renderTagList() {
         return;
     }
 
-    const activeTag = document.getElementById('global-tag-search').value.toLowerCase();
+    window.activeTags = window.activeTags || new Set();
 
-    if (activeTag) {
+    if (window.activeTags.size > 0) {
         document.getElementById('btn-clear-tag').classList.remove('hidden');
+        document.getElementById('global-tag-search').value = Array.from(window.activeTags).join(', ');
     } else {
         document.getElementById('btn-clear-tag').classList.add('hidden');
+        document.getElementById('global-tag-search').value = '';
     }
 
     const fragment = document.createDocumentFragment();
     sortedTags.forEach(tag => {
         const btn = document.createElement('button');
-        const isActive = tag === activeTag;
+        const isActive = window.activeTags.has(tag);
         btn.className = `w-full text-left px-3 py-2 rounded-sm text-sm font-medium transition-colors flex justify-between items-center ${isActive ? 'bg-amber-100 text-amber-900 border border-amber-300' : 'bg-stone-50 text-stone-700 hover:bg-stone-200 border border-transparent'}`;
         btn.onclick = () => {
-            document.getElementById('global-tag-search').value = isActive ? '' : tag;
+            if (isActive) {
+                window.activeTags.delete(tag);
+            } else {
+                window.activeTags.add(tag);
+            }
             renderMain();
             renderTagList();
         };
-        btn.innerHTML = `<span>#${tag}</span><span class="text-[10px] bg-white/50 px-1.5 py-0.5 rounded text-stone-500">${tagCount[tag]}</span>`;
+        btn.innerHTML = `<span>#${tag}</span>`;
         fragment.appendChild(btn);
     });
     container.appendChild(fragment);
