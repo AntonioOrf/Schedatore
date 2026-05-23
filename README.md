@@ -11,7 +11,7 @@
 
  Un editor di testo con vista "split-screen" per affiancare comodamente le immagini o i PDF originali del documento durante il lavoro di trascrizione.
 
- ## Ambiente di Trascrizione Integrato
+ ## Gestione Modulare dei Dati
  
    <img width="1920" height="1280" alt="832_1x_shots_so" src="https://github.com/user-attachments/assets/ecd03e76-77de-4eff-b733-ad6bbea0b084" />
 
