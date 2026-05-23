@@ -7,6 +7,7 @@ async function apriTrascrizione(id) {
     
     // Carica il testo precedente (se esiste, altrimenti inizializza con un paragrafo vuoto cliccabile)
     document.getElementById('trascrizione-editor').innerHTML = m.trascrizione || '<p><br></p>';
+    window.trascrizioneNonSalvata = false;
     
     const panelAllegato = document.getElementById('trascrizione-allegato-panel');
     const resizer = document.getElementById('trascrizione-resizer');
@@ -258,6 +259,13 @@ window.toggleFullscreenAllegato = function() {
 };
 
 function chiudiTrascrizione() {
+    if (window.trascrizioneNonSalvata) {
+        if (!confirm("Attenzione: ci sono modifiche non salvate in questa trascrizione.\nSei sicuro di voler uscire e perdere le modifiche?")) {
+            return;
+        }
+    }
+    window.trascrizioneNonSalvata = false;
+
     // Prima di chiudere fermiamo l'iframe
     document.getElementById('trasc-pdf-preview').src = '';
     
@@ -282,10 +290,11 @@ async function salvaTrascrizione() {
     const editor = document.getElementById('trascrizione-editor');
     const testo = editor.innerHTML;
     
-    const m = appData.manoscritti.find(x => x.id === id);
+    const m = appData.manoscritti.find(x => String(x.id) === String(id));
     if (m) {
         m.trascrizione = testo;
         await salvaTutto();
+        window.trascrizioneNonSalvata = false;
         mostraMessaggio("Trascrizione salvata con successo!", "success");
         editor.focus();
     }

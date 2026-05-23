@@ -98,6 +98,8 @@ async function avviaApp() {
     // Scorciatoie da tastiera
     document.addEventListener('keydown', function(e) {
         const vTrascrizione = document.getElementById('view-trascrizione');
+        
+        // Salva trascrizione con Ctrl+S
         if (vTrascrizione && !vTrascrizione.classList.contains('hidden-tab')) {
             if (e.altKey && e.key === 'ArrowLeft') {
                 e.preventDefault();
@@ -109,6 +111,22 @@ async function avviaApp() {
                 e.preventDefault();
                 if (typeof salvaTrascrizione === 'function') salvaTrascrizione();
             }
+            if (e.altKey && e.key === 'f') {
+                e.preventDefault();
+                if (typeof toggleFullscreenAllegato === 'function') toggleFullscreenAllegato();
+            }
+        }
+    });
+
+    window.trascrizioneNonSalvata = false;
+    document.getElementById('trascrizione-editor').addEventListener('input', () => {
+        window.trascrizioneNonSalvata = true;
+    });
+
+    window.addEventListener('beforeunload', (e) => {
+        if (window.trascrizioneNonSalvata) {
+            e.preventDefault();
+            e.returnValue = ''; 
         }
     });
     
