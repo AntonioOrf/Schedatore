@@ -1,6 +1,6 @@
 {
   "name": "archiview",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Gestionale per manoscritti medievali",
   "author": "Antonio Orf",
   "repository": {
@@ -35,7 +35,8 @@
       {
         "provider": "github",
         "owner": "AntonioOrf",
-        "repo": "ArchiView"
+        "repo": "ArchiView",
+        "releaseType": "release"
       }
     ]
   },
