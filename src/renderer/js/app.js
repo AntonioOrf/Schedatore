@@ -44,8 +44,8 @@ async function avviaApp() {
     const debouncedRenderMain = debounce(renderMain, 150);
     const debouncedRenderSuggestions = debounce(renderSearchSuggestions, 150);
 
-    // Controllo aggiornamenti silenzioso all'avvio
-    setTimeout(() => { if (typeof controllaAggiornamenti === 'function') controllaAggiornamenti(false); }, 2000);
+    // Controllo aggiornamenti visibile all'avvio
+    setTimeout(() => { if (typeof window.controllaAggiornamenti === 'function') window.controllaAggiornamenti(true); }, 2000);
 
     document.getElementById('search-input').addEventListener('input', () => {
         debouncedRenderMain();
@@ -179,11 +179,3 @@ window.cambiaTemaSelezionato = function(theme) {
     });
 })();
 
-// Controlla aggiornamenti all'avvio (silenzioso)
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-        if (window.controllaAggiornamenti) {
-            window.controllaAggiornamenti(false);
-        }
-    }, 3000);
-});
