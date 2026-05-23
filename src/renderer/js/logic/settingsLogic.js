@@ -69,6 +69,7 @@ window.controllaAggiornamenti = async function(mostraAvvisi = true) {
             // Mostra il banner non-intrusivo
             const banner = document.getElementById('update-banner');
             document.getElementById('update-banner-text').textContent = `È disponibile la nuova versione ${result.latestVersion} (attuale: ${result.currentVersion})`;
+            banner.classList.remove('hidden');
             
             const btn = document.getElementById('btn-scarica-aggiornamento');
             btn.textContent = "Scarica Aggiornamento";
