@@ -1,0 +1,28 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*' # La Action si avvierà solo quando crei un tag (es. v1.0.5)
+
+jobs:
+  release:
+    runs-on: windows-latest # Compila su un server Windows
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build and Publish Release
+        env:
+          # Questo token è fornito automaticamente da GitHub, non devi crearlo tu
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run publish-app
