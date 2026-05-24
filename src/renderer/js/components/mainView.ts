@@ -5,17 +5,27 @@ function objectContainsString(obj, str) {
     if (typeof obj === 'string' || typeof obj === 'number') {
         return obj.toString().toLowerCase().includes(str);
     }
+    // Salta completamente gli array per ottimizzare (es. allegati)
     if (Array.isArray(obj)) {
-        return obj.some(item => objectContainsString(item, str));
+        return false;
     }
     if (typeof obj === 'object') {
-        return Object.values(obj).some(val => objectContainsString(val, str));
+        return Object.entries(obj).some(([k, val]) => {
+            // Ignora chiavi interne non rilevanti per la ricerca testuale
+            if (k === 'id' || k === 'cartella' || k === 'tipoDocumento') return false;
+            return objectContainsString(val, str);
+        });
     }
     return false;
 }
 
+window.currentPage = 0;
+const PAGE_SIZE = 50;
+
 // renderMain è sincrona: non usa await, non deve essere async
-function renderMain() {
+function renderMain(resetPage = true) {
+    if (resetPage) window.currentPage = 0;
+
     const grid = document.getElementById('manoscritti-grid');
     const search = document.getElementById('search-input').value.trim().toLowerCase();
     
@@ -55,9 +65,14 @@ function renderMain() {
     grid.innerHTML = '';
 
     const btnDeleteFolder = document.getElementById('btn-delete-folder');
+    const paginationControls = document.getElementById('pagination-controls');
 
     if (filtered.length === 0) {
         grid.classList.add('hidden');
+        if (paginationControls) {
+            paginationControls.classList.add('hidden');
+            paginationControls.classList.remove('flex');
+        }
         document.getElementById('empty-state').classList.remove('hidden');
 
         const manoscrittiTotaliInCartella = appData.manoscritti.filter(m => m.cartella === window.cartellaAttuale).length;
@@ -72,10 +87,30 @@ function renderMain() {
         grid.classList.remove('hidden');
         document.getElementById('empty-state').classList.add('hidden');
 
+        // Paginazione
+        const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+        if (window.currentPage >= totalPages) window.currentPage = Math.max(0, totalPages - 1);
+        const paginated = filtered.slice(window.currentPage * PAGE_SIZE, (window.currentPage + 1) * PAGE_SIZE);
+
+        if (paginationControls) {
+            if (totalPages > 1) {
+                paginationControls.classList.remove('hidden');
+                paginationControls.classList.add('flex');
+                document.getElementById('page-indicator').textContent = `Pagina ${window.currentPage + 1} di ${totalPages}`;
+                const btnPrev = document.getElementById('btn-prev-page');
+                const btnNext = document.getElementById('btn-next-page');
+                if (btnPrev) btnPrev.disabled = window.currentPage === 0;
+                if (btnNext) btnNext.disabled = window.currentPage === totalPages - 1;
+            } else {
+                paginationControls.classList.add('hidden');
+                paginationControls.classList.remove('flex');
+            }
+        }
+
         // Creazione Card con DocumentFragment per un unico reflow DOM
         const fragment = document.createDocumentFragment();
 
-        for (const m of filtered) {
+        for (const m of paginated) {
             const div = document.createElement('div');
             div.className = "card-scheda";
             div.id = 'card-' + m.id;
@@ -94,10 +129,10 @@ function renderMain() {
             let allegatoHTML = '';
             const btnTrascriviModifica = `
                 <button onclick="editItem('${m.id}')" class="btn btn-secondary flex-1 text-xs uppercase tracking-wider">
-                    <span class="text-xs font-bold uppercase tracking-wider">Modifica</span>
+                    <span class="text-xs font-bold uppercase tracking-wider">${window.t('btn_edit') || 'Modifica'}</span>
                 </button>
                 <button onclick="apriTrascrizione('${m.id}')" class="btn flex-1 text-xs uppercase tracking-wider" style="background-color: var(--color-primary-light); color: var(--color-primary-hover); border: 1px solid var(--color-primary-border);">
-                    <span class="text-xs font-bold uppercase tracking-wider">Trascrivi</span>
+                    <span class="text-xs font-bold uppercase tracking-wider">${window.t('btn_transcribe') || 'Trascrivi'}</span>
                 </button>
             `;
 
@@ -114,7 +149,7 @@ function renderMain() {
             if (m.tags) {
                 const tagsList = m.tags.split(',').map(t => t.trim()).filter(t => t);
                 if (tagsList.length > 0) {
-                    tagsHTML = '<div class="flex flex-wrap gap-1 mt-2">' + tagsList.map(t => `<span class="card-tag">${t}</span>`).join('') + '</div>';
+                    tagsHTML = '<div class="flex flex-wrap gap-1 mt-2">' + tagsList.map(t => `<span class="card-tag">${escapeHTML(t)}</span>`).join('') + '</div>';
                 }
             }
 
@@ -126,21 +161,21 @@ function renderMain() {
                     let conf = CONFIG_CAMPI[campo] || { type: 'text' };
                     if (conf.type === 'dynamic_list' && Array.isArray(m[campo])) {
                         if (m[campo].length > 0) {
-                            const labelStr = conf.label || campo;
+                            const labelStr = window.t('field_' + campo) !== 'field_' + campo ? window.t('field_' + campo) : (conf.label || campo);
                             infoHTML += `<div class="mt-3 mb-1"><span class="font-bold text-xs uppercase tracking-wider opacity-70 border-b border-stone-200/50 pb-1">${labelStr}</span></div>`;
                             m[campo].forEach(item => {
                                 const k = item.k || item.ruolo || '';
                                 const v = item.v || item.nome || '';
                                 if (k || v) {
-                                    infoHTML += `<p class="truncate pl-2 border-l-2 border-amber-200/50 mb-0.5"><b>${k}:</b> ${v}</p>`;
+                                    infoHTML += `<p class="truncate pl-2 border-l-2 border-amber-200/50 mb-0.5"><b>${escapeHTML(k)}:</b> ${escapeHTML(v)}</p>`;
                                 }
                             });
                         }
                     } else {
-                        const label = conf.label || campo;
-                        if (campo === 'note') infoHTML += `<p class="text-stone-500 mt-2 text-xs italic line-clamp-3 leading-relaxed border-l-2 border-amber-200 pl-2" title="${m.note.replace(/"/g, '&quot;')}">${m.note}</p>`;
-                        else if (campo === 'titolo') infoHTML += `<p class="truncate mt-1"><b>${label}:</b> <i>${m.titolo}</i></p>`;
-                        else infoHTML += `<p class="truncate mt-1"><b>${label}:</b> ${m[campo]}</p>`;
+                        const label = window.t('field_' + campo) !== 'field_' + campo ? window.t('field_' + campo) : (conf.label || campo);
+                        if (campo === 'note') infoHTML += `<p class="text-stone-500 mt-2 text-xs italic line-clamp-3 leading-relaxed border-l-2 border-amber-200 pl-2" title="${escapeHTML(m.note)}">${escapeHTML(m.note)}</p>`;
+                        else if (campo === 'titolo') infoHTML += `<p class="truncate mt-1"><b>${escapeHTML(label)}:</b> <i>${escapeHTML(m.titolo)}</i></p>`;
+                        else infoHTML += `<p class="truncate mt-1"><b>${escapeHTML(label)}:</b> ${escapeHTML(m[campo])}</p>`;
                     }
                 }
             });
@@ -148,8 +183,8 @@ function renderMain() {
             div.innerHTML = `
                 <div>
                     <div class="flex justify-between items-start gap-2 mb-2">
-                        <h3 class="card-title mb-0" title="${m.segnatura}">${m.segnatura}</h3>
-                        <span class="card-badge shrink-0 mt-0">${tipoDoc ? tipoDoc.nome : 'Documento'}</span>
+                        <h3 class="card-title mb-0" title="${escapeHTML(m.segnatura)}">${escapeHTML(m.segnatura)}</h3>
+                        <span class="card-badge shrink-0 mt-0">${escapeHTML(tipoDoc ? (window.t('model_' + tipoDoc.id) !== 'model_' + tipoDoc.id ? window.t('model_' + tipoDoc.id) : tipoDoc.nome) : 'Documento')}</span>
                     </div>
                     <div class="space-y-1 text-sm">
                         ${infoHTML}
@@ -199,9 +234,8 @@ function extractSnippet(val, search) {
     const strVal = val.toString();
     
     // Rimuovi tag HTML per sicurezza
-    const temp = document.createElement('div');
-    temp.innerHTML = strVal;
-    const cleanText = temp.textContent || temp.innerText || "";
+    const doc = new DOMParser().parseFromString(strVal, 'text/html');
+    const cleanText = doc.body.textContent || doc.body.innerText || "";
     
     const lowerStr = cleanText.toLowerCase();
     const idx = lowerStr.indexOf(search);
@@ -263,7 +297,7 @@ function renderSearchSuggestions() {
     }
 
     if (matches.length === 0) {
-        container.innerHTML = '<div class="p-4 text-xs text-stone-400 italic text-center">Nessun match trovato nel database.</div>';
+        container.innerHTML = `<div class="p-4 text-xs text-stone-400 italic text-center">${window.t('no_search_match')}</div>`;
         return;
     }
 
@@ -290,12 +324,20 @@ function renderSearchSuggestions() {
             }
         };
         div.innerHTML = `
-            <div class="text-xs font-bold text-stone-800 truncate mb-1">${match.item.segnatura || match.item.titolo || 'Senza Titolo'}</div>
+            <div class="text-xs font-bold text-stone-800 truncate mb-1">${escapeHTML(match.item.segnatura || match.item.titolo || 'Senza Titolo')}</div>
             <div class="text-[10px] text-stone-600 leading-tight">
-                <span class="font-semibold text-amber-700 capitalize">${match.key}:</span> ${match.snippet}
+                <span class="font-semibold text-amber-700 capitalize">${escapeHTML(match.key)}:</span> ${escapeHTML(match.snippet)}
             </div>
         `;
         fragment.appendChild(div);
     });
     container.appendChild(fragment);
 }
+
+window.cambiaPagina = function(dir) {
+    window.currentPage += dir;
+    renderMain(false);
+    // Scrolla la vista all'inizio
+    const viewList = document.getElementById('view-list');
+    if (viewList) viewList.scrollTo({ top: 0, behavior: 'smooth' });
+};

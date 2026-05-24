@@ -6,7 +6,8 @@ function aggiornaSelectTipiDocumento() {
     appData.tipiDocumento.forEach(tipo => {
         const opt = document.createElement('option');
         opt.value = tipo.id;
-        opt.textContent = tipo.nome;
+        const tNome = window.t('model_' + tipo.id);
+        opt.textContent = tNome !== 'model_' + tipo.id ? tNome : tipo.nome;
         select.appendChild(opt);
     });
     if (appData.tipiDocumento.length > 0) {
@@ -31,7 +32,7 @@ function renderDynamicFields() {
         div.className = 'form-group';
         const label = document.createElement('label');
         label.className = 'form-label';
-        label.textContent = conf.label;
+        label.textContent = window.t('field_' + campoId) !== 'field_' + campoId ? window.t('field_' + campoId) : conf.label;
         
         if (conf.type === 'dynamic_list') {
             div.appendChild(label);
@@ -43,7 +44,8 @@ function renderDynamicFields() {
             const btnAdd = document.createElement('button');
             btnAdd.type = 'button';
             btnAdd.className = 'btn btn-secondary text-sm';
-            btnAdd.innerHTML = '<i data-lucide="plus" class="w-4 h-4"></i> Aggiungi ' + conf.label;
+            const labelStr = window.t('field_' + campoId) !== 'field_' + campoId ? window.t('field_' + campoId) : conf.label;
+            btnAdd.innerHTML = '<i data-lucide="plus" class="w-4 h-4"></i> ' + window.t('btn_add_dynamic') + ' ' + escapeHTML(labelStr);
             btnAdd.onclick = () => window.aggiungiElementoDinamico(campoId, conf.keyPlaceholder, conf.valPlaceholder, '', '');
             div.appendChild(btnAdd);
             
@@ -54,12 +56,15 @@ function renderDynamicFields() {
             if (conf.type === 'textarea') el.rows = 3;
             else el.type = 'text';
             el.className = 'form-input';
-            el.placeholder = conf.placeholder || '';
+            const pStr = window.t('placeholder_' + campoId) !== 'placeholder_' + campoId ? window.t('placeholder_' + campoId) : conf.placeholder;
+            el.placeholder = pStr || '';
             div.appendChild(el);
         }
         
         container.appendChild(div);
     });
+
+    if (window.lucide) lucide.createIcons({ nodes: [container] });
 }
 
 window.aggiungiElementoDinamico = function(campoId, placeholderKey, placeholderVal, valKey = '', valVal = '') {
@@ -72,14 +77,18 @@ window.aggiungiElementoDinamico = function(campoId, placeholderKey, placeholderV
     const inputKey = document.createElement('input');
     inputKey.type = 'text';
     inputKey.className = 'form-input w-1/3 list-key';
-    inputKey.placeholder = placeholderKey || 'Chiave';
+    let pKey = window.t('placeholder_key_' + campoId);
+    pKey = pKey !== 'placeholder_key_' + campoId ? pKey : placeholderKey;
+    inputKey.placeholder = pKey || 'Chiave';
     inputKey.value = valKey;
     inputKey.style.width = '33.33%'; // Fix flexbox
 
     const inputVal = document.createElement('input');
     inputVal.type = 'text';
     inputVal.className = 'form-input flex-1 list-val';
-    inputVal.placeholder = placeholderVal || 'Valore';
+    let pVal = window.t('placeholder_val_' + campoId);
+    pVal = pVal !== 'placeholder_val_' + campoId ? pVal : placeholderVal;
+    inputVal.placeholder = pVal || 'Valore';
     inputVal.value = valVal;
     inputVal.style.width = 'auto'; // Fix flexbox crush
     
@@ -204,20 +213,20 @@ window.renderAllegatiForm = async function(allegatiList) {
         let content = '';
         if (al.tipo === 'pdf') {
             content = `
-                <div class="flex items-center gap-2 truncate cursor-pointer hover:text-red-700 flex-1" onclick="apriPdfInterno('${al.nome}')">
+                <div class="flex items-center gap-2 truncate cursor-pointer hover:text-red-700 flex-1" onclick="apriPdfInterno('${escapeHTML(al.nome)}'">
                     <i data-lucide="grip-vertical" class="w-4 h-4 text-stone-400 shrink-0"></i>
                     <i data-lucide="file-text" class="w-6 h-6 text-red-600 shrink-0"></i>
-                    <span class="text-xs font-semibold truncate" title="${al.originalName || al.nome}">${al.originalName || 'PDF'}</span>
+                    <span class="text-xs font-semibold truncate" title="${escapeHTML(al.originalName || al.nome)}">${escapeHTML(al.originalName || 'PDF')}</span>
                 </div>
             `;
         } else {
             let src = '';
             if (window.apiBrowser) src = 'local-asset://' + encodeURIComponent(al.nome);
             content = `
-                <div class="flex items-center gap-2 truncate cursor-pointer hover:opacity-80 flex-1" onclick="apriModal('${src}', 'img')">
+                <div class="flex items-center gap-2 truncate cursor-pointer hover:opacity-80 flex-1" onclick="apriModal('${escapeHTML(src)}', 'img')">
                     <i data-lucide="grip-vertical" class="w-4 h-4 text-stone-400 shrink-0"></i>
-                    <img src="${src}" class="w-8 h-8 object-cover rounded-sm border border-stone-200 shrink-0">
-                    <span class="text-xs font-semibold truncate" title="${al.originalName || al.nome}">${al.originalName || 'Immagine'}</span>
+                    <img src="${escapeHTML(src)}" class="w-8 h-8 object-cover rounded-sm border border-stone-200 shrink-0">
+                    <span class="text-xs font-semibold truncate" title="${escapeHTML(al.originalName || al.nome)}">${escapeHTML(al.originalName || 'Immagine')}</span>
                 </div>
             `;
         }

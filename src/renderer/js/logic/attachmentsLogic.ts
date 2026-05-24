@@ -33,7 +33,7 @@ async function apriTrascrizione(id) {
     const allegatiM = normalizzaAllegati(m);
     
     if (allegatiM.length > 0 && window.apiBrowser) {
-        panelAllegato.classList.remove('hidden');
+        panelAllegato.classList.remove('hidden-tab');
         if (resizer) resizer.classList.remove('hidden');
         if (editorPanel) {
             editorPanel.classList.remove('hidden');
@@ -52,7 +52,7 @@ async function apriTrascrizione(id) {
             window.cambiaAllegatoTrascrizione(m.allegati[0].nome, m.allegati[0].tipo, 0);
         }
     } else {
-        panelAllegato.classList.add('hidden');
+        panelAllegato.classList.add('hidden-tab');
         if (resizer) resizer.classList.add('hidden');
         if (editorPanel) {
             editorPanel.style.width = '100%';
@@ -78,7 +78,7 @@ window.renderThumbnailsTrascrizione = function(id) {
     normalizzaAllegati(m);
     
     if (m.allegati.length > 1) {
-        thumbContainer.classList.remove('hidden');
+        thumbContainer.classList.remove('hidden-tab');
         for (let i = 0; i < m.allegati.length; i++) {
             const al = m.allegati[i];
             
@@ -88,7 +88,7 @@ window.renderThumbnailsTrascrizione = function(id) {
             const btn = document.createElement('button');
             btn.className = "btn btn-ghost rounded-none allegato-btn px-3 py-1 text-xs whitespace-nowrap truncate max-w-[150px] border-r border-stone-200";
             btn.title = al.originalName || `Allegato ${i+1}`;
-            btn.innerHTML = al.tipo === 'pdf' ? `<i data-lucide="file-text" class="w-3 h-3 inline-block mr-1"></i> ${al.originalName || 'PDF ' + (i+1)}` : `<i data-lucide="image" class="w-3 h-3 inline-block mr-1"></i> ${al.originalName || 'Immagine ' + (i+1)}`;
+            btn.innerHTML = al.tipo === 'pdf' ? `<i data-lucide="file-text" class="w-3 h-3 inline-block mr-1"></i> ${escapeHTML(al.originalName || 'PDF ' + (i+1))}` : `<i data-lucide="image" class="w-3 h-3 inline-block mr-1"></i> ${escapeHTML(al.originalName || 'Immagine ' + (i+1))}`;
             btn.onclick = () => window.cambiaAllegatoTrascrizione(al.nome, al.tipo, i);
             
             const btnEdit = document.createElement('button');
@@ -157,7 +157,7 @@ window.renderThumbnailsTrascrizione = function(id) {
     // Aggiorna le icone Lucide solo nel thumbnail container
     if (window.lucide) lucide.createIcons({ nodes: [thumbContainer] });
     } else {
-        thumbContainer.classList.add('hidden');
+        thumbContainer.classList.add('hidden-tab');
     }
 };
 
@@ -237,7 +237,7 @@ window.toggleFullscreenAllegato = function() {
     const panelAllegato = document.getElementById('trascrizione-allegato-panel');
     
     if (!editorPanel) return;
-    if (panelAllegato && panelAllegato.classList.contains('hidden')) {
+    if (panelAllegato && panelAllegato.classList.contains('hidden-tab')) {
         return; // Impossibile collassare se non c'è l'allegato
     }
 
@@ -304,7 +304,7 @@ async function salvaTrascrizione() {
         m.trascrizione = testo;
         await salvaTutto();
         window.trascrizioneNonSalvata = false;
-        mostraMessaggio("Trascrizione salvata con successo!", "success");
+        mostraMessaggio(window.t("msg_transcription_saved"), "success");
         editor.focus();
     }
 }
@@ -340,7 +340,7 @@ async function caricaAllegatoTrascrizione(e) {
         }
     } catch (error) {
         console.error("Errore caricamento da trascrizione:", error);
-        mostraMessaggio("Errore nel salvataggio dell'allegato.", "error");
+        mostraMessaggio(window.t("msg_attachment_error"), "error");
     }
     
     // Resetta l'input
