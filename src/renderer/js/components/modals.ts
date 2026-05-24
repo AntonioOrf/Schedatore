@@ -188,10 +188,10 @@ window.mostraBottomConfirm = function(testo, onConfirmCallback, actionId = null)
     const checkbox = document.getElementById('bottom-confirm-skip');
     
     if (actionId) {
-        checkboxContainer.classList.remove('hidden');
+        checkboxContainer.classList.remove('hidden-tab');
         checkbox.checked = false;
     } else {
-        checkboxContainer.classList.add('hidden');
+        checkboxContainer.classList.add('hidden-tab');
     }
     
     // Rimuovi vecchi listener clonando il pulsante

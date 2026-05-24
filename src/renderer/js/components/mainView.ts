@@ -5,17 +5,27 @@ function objectContainsString(obj, str) {
     if (typeof obj === 'string' || typeof obj === 'number') {
         return obj.toString().toLowerCase().includes(str);
     }
+    // Salta completamente gli array per ottimizzare (es. allegati)
     if (Array.isArray(obj)) {
-        return obj.some(item => objectContainsString(item, str));
+        return false;
     }
     if (typeof obj === 'object') {
-        return Object.values(obj).some(val => objectContainsString(val, str));
+        return Object.entries(obj).some(([k, val]) => {
+            // Ignora chiavi interne non rilevanti per la ricerca testuale
+            if (k === 'id' || k === 'cartella' || k === 'tipoDocumento') return false;
+            return objectContainsString(val, str);
+        });
     }
     return false;
 }
 
+window.currentPage = 0;
+const PAGE_SIZE = 50;
+
 // renderMain è sincrona: non usa await, non deve essere async
-function renderMain() {
+function renderMain(resetPage = true) {
+    if (resetPage) window.currentPage = 0;
+
     const grid = document.getElementById('manoscritti-grid');
     const search = document.getElementById('search-input').value.trim().toLowerCase();
     
@@ -55,9 +65,14 @@ function renderMain() {
     grid.innerHTML = '';
 
     const btnDeleteFolder = document.getElementById('btn-delete-folder');
+    const paginationControls = document.getElementById('pagination-controls');
 
     if (filtered.length === 0) {
         grid.classList.add('hidden');
+        if (paginationControls) {
+            paginationControls.classList.add('hidden');
+            paginationControls.classList.remove('flex');
+        }
         document.getElementById('empty-state').classList.remove('hidden');
 
         const manoscrittiTotaliInCartella = appData.manoscritti.filter(m => m.cartella === window.cartellaAttuale).length;
@@ -72,10 +87,30 @@ function renderMain() {
         grid.classList.remove('hidden');
         document.getElementById('empty-state').classList.add('hidden');
 
+        // Paginazione
+        const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+        if (window.currentPage >= totalPages) window.currentPage = Math.max(0, totalPages - 1);
+        const paginated = filtered.slice(window.currentPage * PAGE_SIZE, (window.currentPage + 1) * PAGE_SIZE);
+
+        if (paginationControls) {
+            if (totalPages > 1) {
+                paginationControls.classList.remove('hidden');
+                paginationControls.classList.add('flex');
+                document.getElementById('page-indicator').textContent = `Pagina ${window.currentPage + 1} di ${totalPages}`;
+                const btnPrev = document.getElementById('btn-prev-page');
+                const btnNext = document.getElementById('btn-next-page');
+                if (btnPrev) btnPrev.disabled = window.currentPage === 0;
+                if (btnNext) btnNext.disabled = window.currentPage === totalPages - 1;
+            } else {
+                paginationControls.classList.add('hidden');
+                paginationControls.classList.remove('flex');
+            }
+        }
+
         // Creazione Card con DocumentFragment per un unico reflow DOM
         const fragment = document.createDocumentFragment();
 
-        for (const m of filtered) {
+        for (const m of paginated) {
             const div = document.createElement('div');
             div.className = "card-scheda";
             div.id = 'card-' + m.id;
@@ -299,3 +334,11 @@ function renderSearchSuggestions() {
     });
     container.appendChild(fragment);
 }
+
+window.cambiaPagina = function(dir) {
+    window.currentPage += dir;
+    renderMain(false);
+    // Scrolla la vista all'inizio
+    const viewList = document.getElementById('view-list');
+    if (viewList) viewList.scrollTo({ top: 0, behavior: 'smooth' });
+};

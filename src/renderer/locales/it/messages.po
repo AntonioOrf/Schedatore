@@ -25,6 +25,11 @@ msgstr "Aggiungi"
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
+msgid "msg_add_one_field"
+msgstr "Aggiungi almeno un campo base o personalizzato."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
 msgid "btn_add_image_pdf"
 msgstr "Aggiungi Immagine/PDF"
 
@@ -60,8 +65,23 @@ msgstr "Apri Cartelle"
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
+msgid "msg_current_version"
+msgstr "attuale:"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
 msgid "field_autore"
 msgstr "Autore/i"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "btn_download_starting"
+msgstr "Avvio download..."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_backup_success"
+msgstr "Backup creato con successo!"
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
@@ -107,6 +127,16 @@ msgstr "Campi selezionati (trascina per riordinare)"
 #: src/renderer/js/logic/i18n.ts
 msgid "settings_workspace"
 msgstr "Cartella di Lavoro (Archivio)"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_folder_deleted"
+msgstr "Cartella eliminata."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_folder_renamed"
+msgstr "Cartella rinominata."
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
@@ -185,6 +215,11 @@ msgstr "Controlla se è disponibile una nuova versione del programma su GitHub."
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
+msgid "msg_check_updates"
+msgstr "Controllo aggiornamenti in corso..."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
 msgid "tooltip_italic"
 msgstr "Corsivo"
 
@@ -260,6 +295,11 @@ msgstr "Dichiarante"
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
+msgid "msg_new_version_avail"
+msgstr "È disponibile la nuova versione"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
 msgid "update_available"
 msgstr "È disponibile un nuovo aggiornamento!"
 
@@ -287,6 +327,26 @@ msgstr "Elimina"
 #: src/renderer/js/logic/i18n.ts
 msgid "btn_delete_folder"
 msgstr "Elimina questa cartella"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_update_error"
+msgstr "Errore controllo aggiornamenti: "
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "btn_download_error"
+msgstr "Errore Download"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_backup_error"
+msgstr "Errore durante il backup: "
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_file_save_error"
+msgstr "Errore durante il salvataggio."
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
@@ -350,6 +410,11 @@ msgstr "Esci senza salvare"
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
+msgid "msg_folder_exists_dest"
+msgstr "Esiste già una cartella con questo nome nella destinazione."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
 msgid "btn_export_zip"
 msgstr "Esporta Backup in ZIP"
 
@@ -395,8 +460,48 @@ msgstr "Identificativo / Segnatura *"
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
+msgid "msg_folder_name_empty"
+msgstr "Il nome della cartella non può essere vuoto."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_up_to_date"
+msgstr "Il programma è già aggiornato"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_attachment_error"
+msgstr "Impossibile caricare l'allegato."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_cannot_delete_last_folder"
+msgstr "Impossibile eliminare l'unica cartella rimasta."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_cannot_delete_not_empty"
+msgstr "Impossibile eliminare la cartella perché contiene dei documenti."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_type_in_use"
+msgstr "Impossibile eliminare: ci sono schede che usano questo modello."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
 msgid "modal_settings"
 msgstr "Impostazioni"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_insert_type_name"
+msgstr "Inserisci un nome per il tipo di documento."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "btn_installing"
+msgstr "Installazione..."
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
@@ -412,6 +517,11 @@ msgstr "L'eventuale allegato (immagine o PDF) non verrà rimosso dall'archivio."
 #: src/renderer/js/logic/i18n.ts
 msgid "folder_empty"
 msgstr "La cartella è vuota."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_folder_exists"
+msgstr "La cartella esiste già."
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
@@ -432,6 +542,16 @@ msgstr "Marginalia"
 #: src/renderer/js/logic/i18n.ts
 msgid "btn_new_model"
 msgstr "Modello"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_type_updated"
+msgstr "Modello aggiornato con successo."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_type_deleted"
+msgstr "Modello eliminato."
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
@@ -482,6 +602,11 @@ msgstr "Nessun match trovato nel database."
 #: src/renderer/js/logic/i18n.ts
 msgid "placeholder_val_famiglia_dinamici"
 msgstr "Nome"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_folder_invalid_name"
+msgstr "Nome cartella non valido."
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
@@ -545,6 +670,11 @@ msgstr "Nuovo documento vuoto"
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
+msgid "msg_type_created"
+msgstr "Nuovo modello creato."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
 msgid "label_new_filename"
 msgstr "Nuovo nome del file"
 
@@ -580,8 +710,18 @@ msgstr "Persone / Attori"
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
+msgid "btn_prev"
+msgstr "Precedente"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
 msgid "tooltip_prev"
 msgstr "Precedente (Alt + Freccia Sinistra)"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_backup_init"
+msgstr "Preparazione del backup in corso..."
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
@@ -592,6 +732,11 @@ msgstr "Prezzo"
 #: src/renderer/js/logic/i18n.ts
 msgid "settings_workspace_desc"
 msgstr "Questa cartella contiene il tuo database e tutti gli allegati copiati."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "btn_restart_install"
+msgstr "Riavvia e Installa"
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
@@ -635,8 +780,18 @@ msgstr "Salva Trascrizione"
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
+msgid "btn_download_update"
+msgstr "Scarica Aggiornamento"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
 msgid "btn_download_github"
 msgstr "Scarica da GitHub"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_downloading"
+msgstr "Scaricamento:"
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
@@ -652,6 +807,11 @@ msgstr "Scegli la lingua dell'applicazione."
 #: src/renderer/js/logic/i18n.ts
 msgid "btn_choose_folder"
 msgstr "Scegli o crea cartella"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_record_deleted"
+msgstr "Scheda eliminata."
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
@@ -715,6 +875,11 @@ msgstr "Struttura"
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
+msgid "btn_next"
+msgstr "Successiva"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
 msgid "tooltip_next"
 msgstr "Successivo (Alt + Freccia Destra)"
 
@@ -772,6 +937,11 @@ msgstr "Trascrivi"
 #: src/renderer/js/logic/i18n.ts
 msgid "title_transcription"
 msgstr "Trascrizione"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_transcription_saved"
+msgstr "Trascrizione salvata con successo."
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts

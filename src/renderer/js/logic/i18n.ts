@@ -18,6 +18,8 @@ function _linguiExtraction() {
     i18n._({ id: "modal_new_folder", message: "Nuova Cartella" });
     i18n._({ id: "label_folder_name", message: "Nome della cartella o percorso" });
     i18n._({ id: "hint_folder_name", message: "Consiglio: usa la barra ( / ) per creare automaticamente sottocartelle." });
+    i18n._({ id: "btn_prev", message: "Precedente" });
+    i18n._({ id: "btn_next", message: "Successiva" });
     i18n._({ id: "btn_cancel", message: "Annulla" });
     i18n._({ id: "btn_create_folder", message: "Crea Cartella" });
     i18n._({ id: "btn_new_model", message: "Modello" });
@@ -172,6 +174,45 @@ function _linguiExtraction() {
     i18n._({ id: "placeholder_val_crediti_dinamici", message: "Ammontare" });
     i18n._({ id: "placeholder_key_famiglia_dinamici", message: "Parentela (es. Figlio, Moglie)" });
     i18n._({ id: "placeholder_val_famiglia_dinamici", message: "Nome" });
+
+    // Messaggi di stato / Toast
+    i18n._({ id: "msg_insert_type_name", message: "Inserisci un nome per il tipo di documento." });
+    i18n._({ id: "msg_add_one_field", message: "Aggiungi almeno un campo base o personalizzato." });
+    i18n._({ id: "msg_type_updated", message: "Modello aggiornato con successo." });
+    i18n._({ id: "msg_type_created", message: "Nuovo modello creato." });
+    i18n._({ id: "msg_type_in_use", message: "Impossibile eliminare: ci sono schede che usano questo modello." });
+    i18n._({ id: "msg_type_deleted", message: "Modello eliminato." });
+
+    i18n._({ id: "msg_backup_init", message: "Preparazione del backup in corso..." });
+    i18n._({ id: "msg_backup_success", message: "Backup creato con successo!" });
+    i18n._({ id: "msg_backup_error", message: "Errore durante il backup: " });
+    i18n._({ id: "msg_check_updates", message: "Controllo aggiornamenti in corso..." });
+    i18n._({ id: "msg_update_error", message: "Errore controllo aggiornamenti: " });
+    i18n._({ id: "msg_up_to_date", message: "Il programma è già aggiornato" });
+
+    i18n._({ id: "msg_file_save_error", message: "Errore durante il salvataggio." });
+    i18n._({ id: "msg_record_deleted", message: "Scheda eliminata." });
+
+    i18n._({ id: "msg_folder_name_empty", message: "Il nome della cartella non può essere vuoto." });
+    i18n._({ id: "msg_folder_exists", message: "La cartella esiste già." });
+    i18n._({ id: "msg_folder_exists_dest", message: "Esiste già una cartella con questo nome nella destinazione." });
+    i18n._({ id: "msg_cannot_delete_last_folder", message: "Impossibile eliminare l'unica cartella rimasta." });
+    i18n._({ id: "msg_cannot_delete_not_empty", message: "Impossibile eliminare la cartella perché contiene dei documenti." });
+    i18n._({ id: "msg_folder_deleted", message: "Cartella eliminata." });
+    i18n._({ id: "msg_folder_invalid_name", message: "Nome cartella non valido." });
+    i18n._({ id: "msg_folder_renamed", message: "Cartella rinominata." });
+
+    i18n._({ id: "msg_transcription_saved", message: "Trascrizione salvata con successo." });
+    i18n._({ id: "msg_attachment_error", message: "Impossibile caricare l'allegato." });
+
+    i18n._({ id: "msg_new_version_avail", message: "È disponibile la nuova versione" });
+    i18n._({ id: "msg_current_version", message: "attuale:" });
+    i18n._({ id: "btn_download_update", message: "Scarica Aggiornamento" });
+    i18n._({ id: "btn_download_starting", message: "Avvio download..." });
+    i18n._({ id: "btn_download_error", message: "Errore Download" });
+    i18n._({ id: "msg_downloading", message: "Scaricamento:" });
+    i18n._({ id: "btn_restart_install", message: "Riavvia e Installa" });
+    i18n._({ id: "btn_installing", message: "Installazione..." });
 }
 
 // Wrapper per compatibilità con il codice esistente

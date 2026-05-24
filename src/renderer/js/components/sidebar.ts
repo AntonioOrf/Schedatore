@@ -131,7 +131,7 @@ function renderSidebar() {
         // Nodi Figli
         if (hasChildren && window.cartelleEspanse.has(fullPath)) {
             const childContainer = document.createElement('div');
-            Object.keys(nodeObj.children).forEach(childName => {
+            Object.keys(nodeObj.children).sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' })).forEach(childName => {
                 renderNode(childName, nodeObj.children[childName], childContainer, profondita + 1);
             });
             div.appendChild(childContainer);
@@ -140,7 +140,11 @@ function renderSidebar() {
         parentEl.appendChild(div);
     }
 
-    Object.keys(root).forEach(k => renderNode(k, root[k], container, 0));
+    Object.keys(root).sort((a, b) => {
+        if (a === 'Generale') return -1;
+        if (b === 'Generale') return 1;
+        return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+    }).forEach(k => renderNode(k, root[k], container, 0));
 
     // Area di drop speciale per spostare alla root (Generale)
     const dropRoot = document.createElement('div');
@@ -164,7 +168,11 @@ function renderSidebar() {
 function aggiornaSelectCartelle() {
     const select = document.getElementById('form-cartella');
     select.innerHTML = '';
-    [...appData.cartelle].sort().forEach(c => {
+    [...appData.cartelle].sort((a, b) => {
+        if (a === 'Generale') return -1;
+        if (b === 'Generale') return 1;
+        return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+    }).forEach(c => {
         const opt = document.createElement('option');
         opt.value = c;
         // Sostituisce la barra con una freccia per estetica nel menu a tendina

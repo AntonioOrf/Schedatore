@@ -22,7 +22,7 @@
 <body class="min-h-screen p-4 md:p-6 flex flex-col h-screen overflow-hidden">
 
     <!-- Modal Benvenuto / Selezione Workspace Iniziale -->
-    <div id="welcome-modal" class="modal-overlay hidden-tab z-[70] bg-stone-900/80 backdrop-blur-sm">
+    <div id="welcome-modal" class="modal-overlay hidden-tab z-70 bg-stone-900/80 backdrop-blur-sm">
         <div class="modal-window max-w-lg p-8 text-center shadow-2xl border-2 border-stone-200">
             <div class="flex justify-center mb-6">
                 <div class="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center text-stone-600 shadow-inner">
@@ -41,7 +41,7 @@
     </div>
 
     <!-- Modal Immagini/PDF -->
-    <div id="image-modal" class="modal-overlay z-[60] hidden-tab" style="background-color: rgba(0,0,0,0.9);">
+    <div id="image-modal" class="modal-overlay z-60 hidden-tab" style="background-color: rgba(0,0,0,0.9);">
         <button onclick="chiudiModal()" class="btn btn-ghost btn-icon absolute top-6 right-6 z-10" style="background-color: rgba(0,0,0,0.5); color: #ccc;">
             <i data-lucide="x" class="w-8 h-8"></i>
         </button>
@@ -126,7 +126,7 @@
                     </div>
                     <div>
                         <label class="form-label" data-i18n="label_selected_fields">Campi selezionati (trascina per riordinare)</label>
-                        <div id="custom-fields-list" class="flex flex-wrap gap-2 min-h-[3.5rem] p-3 bg-stone-50 border border-stone-200 rounded-sm items-center shadow-inner">
+                        <div id="custom-fields-list" class="flex flex-wrap gap-2 min-h-14 p-3 bg-stone-50 border border-stone-200 rounded-sm items-center shadow-inner">
                             <span class="text-xs text-stone-400 italic" id="empty-fields-placeholder" data-i18n="placeholder_empty_fields">Seleziona o aggiungi dei campi...</span>
                         </div>
                     </div>
@@ -144,7 +144,7 @@
     </div>
 
     <!-- Modal Gestione Modelli Esistenti -->
-    <div id="manage-types-modal" class="modal-overlay hidden-tab z-[60]">
+    <div id="manage-types-modal" class="modal-overlay hidden-tab z-60">
         <div class="modal-window max-w-lg">
             <div class="modal-header">
                 <h3 class="modal-title" data-i18n="modal_manage_models">Gestisci Modelli</h3>
@@ -296,7 +296,7 @@
     </div>
 
     <!-- Banner Aggiornamenti -->
-    <div id="update-banner" class="hidden w-full bg-sky-600 text-white px-4 py-3 flex items-center justify-between shadow-md z-50 shrink-0 mb-6 rounded-sm border border-sky-700">
+    <div id="update-banner" class="hidden-tab w-full bg-sky-600 text-white px-4 py-3 flex items-center justify-between shadow-md z-50 shrink-0 mb-6 rounded-sm border border-sky-700">
         <div class="flex items-center gap-2 text-sm font-medium">
             <i data-lucide="download-cloud" class="w-5 h-5"></i>
             <span id="update-banner-text" data-i18n="update_available">È disponibile un nuovo aggiornamento!</span>
@@ -308,7 +308,7 @@
     </div>
 
     <!-- Banner Conferma (Centrato) -->
-    <div id="bottom-confirm-banner" class="modal-overlay hidden-tab z-[110]">
+    <div id="bottom-confirm-banner" class="modal-overlay hidden-tab z-110">
         <div class="modal-window max-w-sm">
             <div class="modal-header" style="background-color: var(--color-danger-light); border-color: #fca5a5;">
                 <i data-lucide="alert-triangle" class="w-6 h-6 text-red-600"></i>
@@ -316,7 +316,7 @@
             </div>
             <div class="modal-body">
                 <p id="bottom-confirm-text" class="font-medium mb-4 text-center" data-i18n="confirm_prompt_default">Sei sicuro?</p>
-                <div id="bottom-confirm-checkbox-container" class="mb-4 flex items-center justify-center gap-2 hidden">
+                <div id="bottom-confirm-checkbox-container" class="mb-4 flex items-center justify-center gap-2 hidden-tab">
                     <input type="checkbox" id="bottom-confirm-skip" class="w-4 h-4 text-amber-600 border-stone-300 rounded focus:ring-amber-500">
                     <label for="bottom-confirm-skip" class="text-sm text-stone-600 cursor-pointer select-none" data-i18n="dont_ask_again">Non chiederlo più</label>
                 </div>
@@ -357,7 +357,7 @@
     </header>
 
     <!-- Toast Notifications Container -->
-    <div id="toast-container" class="fixed bottom-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none"></div>
+    <div id="toast-container" class="fixed bottom-4 right-4 z-100 flex flex-col gap-2 pointer-events-none"></div>
 
     <!-- Layout a due colonne -->
     <div class="flex-1 flex flex-col md:flex-row gap-6 overflow-hidden">
@@ -437,7 +437,14 @@
                 </div>
                 
                 <!-- Griglia -->
-                <div id="manoscritti-grid" class="grid grid-cols-1 xl:grid-cols-2 gap-5 pb-10"></div>
+                <div id="manoscritti-grid" class="grid grid-cols-1 xl:grid-cols-2 gap-5 pb-6"></div>
+                
+                <!-- Controlli Paginazione -->
+                <div id="pagination-controls" class="hidden justify-center items-center gap-4 mt-2 mb-10">
+                    <button onclick="cambiaPagina(-1)" class="btn btn-secondary" id="btn-prev-page"><i data-lucide="chevron-left" class="w-4 h-4"></i> <span data-i18n="btn_prev">Precedente</span></button>
+                    <span id="page-indicator" class="text-stone-600 font-medium text-sm"></span>
+                    <button onclick="cambiaPagina(1)" class="btn btn-secondary" id="btn-next-page"><span data-i18n="btn_next">Successiva</span> <i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                </div>
 
                 <!-- Stato Vuoto -->
                 <div id="empty-state" class="hidden text-center py-16 mt-10 bg-stone-50 rounded-sm border border-dashed border-stone-300">
@@ -569,8 +576,8 @@
             </div>
 
             <!-- Right Panel: Attachment Viewer -->
-            <div id="trascrizione-allegato-panel" class="flex-1 bg-stone-200/50 shadow-inner border border-stone-300/50 rounded-sm overflow-hidden relative flex flex-col transition-all duration-300 hidden min-w-[250px]">
-                <div id="trascrizione-thumbnails" class="flex gap-2 p-2 bg-stone-100 border-b border-stone-300 overflow-x-auto hidden shrink-0"></div>
+            <div id="trascrizione-allegato-panel" class="flex-1 bg-stone-200/50 shadow-inner border border-stone-300/50 rounded-sm overflow-hidden relative flex flex-col transition-all duration-300 hidden-tab min-w-[250px]">
+                <div id="trascrizione-thumbnails" class="flex gap-2 p-2 bg-stone-100 border-b border-stone-300 overflow-x-auto hidden-tab shrink-0"></div>
                 <div class="flex-1 relative flex justify-center items-center overflow-hidden group">
                     <button id="btn-prev-allegato" onclick="cambiaAllegatoRelativo(-1)" data-i18n-title="tooltip_prev" class="btn btn-icon absolute left-2 top-1/2 -translate-y-1/2 rounded-full opacity-0 group-hover:opacity-100 disabled:opacity-0 z-10 hidden" style="background-color: rgba(41, 37, 36, 0.6); color: white;"><i data-lucide="chevron-left" class="w-6 h-6"></i></button>
                     <img id="trasc-img-preview" class="max-w-full max-h-full object-contain hidden" />

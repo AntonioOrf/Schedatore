@@ -74,19 +74,19 @@ window.controllaAggiornamenti = async function(mostraAvvisi = true) {
         } else if (result.updateAvailable) {
             // Mostra il banner non-intrusivo
             const banner = document.getElementById('update-banner');
-            document.getElementById('update-banner-text').textContent = `È disponibile la nuova versione ${result.latestVersion} (attuale: ${result.currentVersion})`;
-            banner.classList.remove('hidden');
+            banner.classList.remove('hidden-tab');
+            document.getElementById('update-banner-text').textContent = `${window.t("msg_new_version_avail")} ${result.latestVersion} (${window.t("msg_current_version")} ${result.currentVersion})`;
             
             const btn = document.getElementById('btn-scarica-aggiornamento');
-            btn.textContent = "Scarica Aggiornamento";
+            btn.textContent = window.t("btn_download_update");
             btn.disabled = false;
             
             btn.onclick = async () => {
                 btn.disabled = true;
-                btn.textContent = "Avvio download...";
+                btn.textContent = window.t("btn_download_starting");
                 const res = await window.apiBrowser.downloadUpdate();
                 if (res && !res.success) {
-                    btn.textContent = "Errore Download";
+                    btn.textContent = window.t("btn_download_error");
                     mostraMessaggio(window.t("msg_update_error") + res.error, "error");
                 }
             };
@@ -94,15 +94,15 @@ window.controllaAggiornamenti = async function(mostraAvvisi = true) {
             if (!window._updateListenersSetup && window.apiBrowser.onUpdateProgress) {
                 window.apiBrowser.onUpdateProgress((progressObj) => {
                     const perc = Math.round(progressObj.percent);
-                    btn.textContent = `Scaricamento: ${perc}%`;
+                    btn.textContent = `${window.t("msg_downloading")} ${perc}%`;
                 });
                 
                 window.apiBrowser.onUpdateDownloaded(() => {
                     btn.disabled = false;
-                    btn.textContent = "Riavvia e Installa";
+                    btn.textContent = window.t("btn_restart_install");
                     btn.classList.add('bg-green-600', 'hover:bg-green-700', 'text-white', 'border-transparent');
                     btn.onclick = () => {
-                        btn.textContent = "Installazione...";
+                        btn.textContent = window.t("btn_installing");
                         btn.disabled = true;
                         window.apiBrowser.installUpdate();
                     };
@@ -110,7 +110,7 @@ window.controllaAggiornamenti = async function(mostraAvvisi = true) {
                 window._updateListenersSetup = true;
             }
             
-            banner.classList.remove('hidden');
+            banner.classList.remove('hidden-tab');
         } else {
             if (mostraAvvisi) mostraMessaggio(`${window.t("msg_up_to_date")} (${result.currentVersion}).`, "success");
         }
@@ -118,7 +118,7 @@ window.controllaAggiornamenti = async function(mostraAvvisi = true) {
 }
 
 window.nascondiBannerAggiornamento = function() {
-    document.getElementById('update-banner').classList.add('hidden');
+    document.getElementById('update-banner').classList.add('hidden-tab');
 }
 
 

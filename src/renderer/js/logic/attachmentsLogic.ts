@@ -33,7 +33,7 @@ async function apriTrascrizione(id) {
     const allegatiM = normalizzaAllegati(m);
     
     if (allegatiM.length > 0 && window.apiBrowser) {
-        panelAllegato.classList.remove('hidden');
+        panelAllegato.classList.remove('hidden-tab');
         if (resizer) resizer.classList.remove('hidden');
         if (editorPanel) {
             editorPanel.classList.remove('hidden');
@@ -52,7 +52,7 @@ async function apriTrascrizione(id) {
             window.cambiaAllegatoTrascrizione(m.allegati[0].nome, m.allegati[0].tipo, 0);
         }
     } else {
-        panelAllegato.classList.add('hidden');
+        panelAllegato.classList.add('hidden-tab');
         if (resizer) resizer.classList.add('hidden');
         if (editorPanel) {
             editorPanel.style.width = '100%';
@@ -78,7 +78,7 @@ window.renderThumbnailsTrascrizione = function(id) {
     normalizzaAllegati(m);
     
     if (m.allegati.length > 1) {
-        thumbContainer.classList.remove('hidden');
+        thumbContainer.classList.remove('hidden-tab');
         for (let i = 0; i < m.allegati.length; i++) {
             const al = m.allegati[i];
             
@@ -157,7 +157,7 @@ window.renderThumbnailsTrascrizione = function(id) {
     // Aggiorna le icone Lucide solo nel thumbnail container
     if (window.lucide) lucide.createIcons({ nodes: [thumbContainer] });
     } else {
-        thumbContainer.classList.add('hidden');
+        thumbContainer.classList.add('hidden-tab');
     }
 };
 
@@ -237,7 +237,7 @@ window.toggleFullscreenAllegato = function() {
     const panelAllegato = document.getElementById('trascrizione-allegato-panel');
     
     if (!editorPanel) return;
-    if (panelAllegato && panelAllegato.classList.contains('hidden')) {
+    if (panelAllegato && panelAllegato.classList.contains('hidden-tab')) {
         return; // Impossibile collassare se non c'è l'allegato
     }
 

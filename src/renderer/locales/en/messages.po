@@ -25,6 +25,11 @@ msgstr "Add"
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
+msgid "msg_add_one_field"
+msgstr "Add at least one base or custom field."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
 msgid "btn_add_image_pdf"
 msgstr "Add Image/PDF"
 
@@ -60,8 +65,23 @@ msgstr "Open Folders"
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
+msgid "msg_current_version"
+msgstr "current:"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
 msgid "field_autore"
 msgstr "Author(s)"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "btn_download_starting"
+msgstr "Starting download..."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_backup_success"
+msgstr "Backup created successfully!"
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
@@ -107,6 +127,16 @@ msgstr "Selected fields (drag to reorder)"
 #: src/renderer/js/logic/i18n.ts
 msgid "settings_workspace"
 msgstr "Working Folder (Archive)"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_folder_deleted"
+msgstr "Folder deleted."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_folder_renamed"
+msgstr "Folder renamed."
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
@@ -185,6 +215,11 @@ msgstr "Check if a new version of the program is available on GitHub."
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
+msgid "msg_check_updates"
+msgstr "Checking for updates..."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
 msgid "tooltip_italic"
 msgstr "Italic"
 
@@ -260,6 +295,11 @@ msgstr "Declarant"
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
+msgid "msg_new_version_avail"
+msgstr "A new version is available"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
 msgid "update_available"
 msgstr "A new update is available!"
 
@@ -287,6 +327,26 @@ msgstr "Delete"
 #: src/renderer/js/logic/i18n.ts
 msgid "btn_delete_folder"
 msgstr "Delete this folder"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_update_error"
+msgstr "Error checking for updates: "
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "btn_download_error"
+msgstr "Download Error"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_backup_error"
+msgstr "Error during backup: "
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_file_save_error"
+msgstr "Error during saving."
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
@@ -350,6 +410,11 @@ msgstr "Exit without saving"
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
+msgid "msg_folder_exists_dest"
+msgstr "A folder with this name already exists in the destination."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
 msgid "btn_export_zip"
 msgstr "Export Backup to ZIP"
 
@@ -395,8 +460,48 @@ msgstr "Identifier / Signature *"
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
+msgid "msg_folder_name_empty"
+msgstr "The folder name cannot be empty."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_up_to_date"
+msgstr "The application is up to date"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_attachment_error"
+msgstr "Cannot load the attachment."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_cannot_delete_last_folder"
+msgstr "Cannot delete the only remaining folder."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_cannot_delete_not_empty"
+msgstr "Cannot delete the folder because it contains documents."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_type_in_use"
+msgstr "Cannot delete: there are records using this model."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
 msgid "modal_settings"
 msgstr "Settings"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_insert_type_name"
+msgstr "Please enter a name for the document type."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "btn_installing"
+msgstr "Installing..."
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
@@ -412,6 +517,11 @@ msgstr "Any attachments (image or PDF) will not be removed from the archive."
 #: src/renderer/js/logic/i18n.ts
 msgid "folder_empty"
 msgstr "The folder is empty."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_folder_exists"
+msgstr "The folder already exists."
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
@@ -432,6 +542,16 @@ msgstr "Marginalia"
 #: src/renderer/js/logic/i18n.ts
 msgid "btn_new_model"
 msgstr "Model"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_type_updated"
+msgstr "Model updated successfully."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_type_deleted"
+msgstr "Model deleted."
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
@@ -482,6 +602,11 @@ msgstr "No match found in the database."
 #: src/renderer/js/logic/i18n.ts
 msgid "placeholder_val_famiglia_dinamici"
 msgstr "Name"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_folder_invalid_name"
+msgstr "Invalid folder name."
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
@@ -545,6 +670,11 @@ msgstr "New empty document"
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
+msgid "msg_type_created"
+msgstr "New model created."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
 msgid "label_new_filename"
 msgstr "New filename"
 
@@ -580,8 +710,18 @@ msgstr "People / Actors"
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
+msgid "btn_prev"
+msgstr "Previous"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
 msgid "tooltip_prev"
 msgstr "Previous (Alt + Left Arrow)"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_backup_init"
+msgstr "Preparing backup..."
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
@@ -592,6 +732,11 @@ msgstr "Price"
 #: src/renderer/js/logic/i18n.ts
 msgid "settings_workspace_desc"
 msgstr "This folder contains your database and all copied attachments."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "btn_restart_install"
+msgstr "Restart and Install"
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
@@ -635,8 +780,18 @@ msgstr "Save Transcription"
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
+msgid "btn_download_update"
+msgstr "Download Update"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
 msgid "btn_download_github"
 msgstr "Download from GitHub"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_downloading"
+msgstr "Downloading:"
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
@@ -652,6 +807,11 @@ msgstr "Choose the application language."
 #: src/renderer/js/logic/i18n.ts
 msgid "btn_choose_folder"
 msgstr "Choose or create folder"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_record_deleted"
+msgstr "Record deleted."
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
@@ -715,6 +875,11 @@ msgstr "Structure"
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
+msgid "btn_next"
+msgstr "Next"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
 msgid "tooltip_next"
 msgstr "Next (Alt + Right Arrow)"
 
@@ -772,6 +937,11 @@ msgstr "Transcribe"
 #: src/renderer/js/logic/i18n.ts
 msgid "title_transcription"
 msgstr "Transcription"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "msg_transcription_saved"
+msgstr "Transcription saved successfully."
 
 #. js-lingui-explicit-id
 #: src/renderer/js/logic/i18n.ts
