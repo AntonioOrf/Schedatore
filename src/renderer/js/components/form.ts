@@ -132,7 +132,9 @@ function resetForm() {
     // Reimposta la select sulla cartella in cui si stava navigando
     document.getElementById('form-cartella').value = window.cartellaAttuale;
     document.getElementById('form-title').textContent = "Compila Nuova Scheda";
-    document.getElementById('btn-cancel-edit').classList.add('hidden');
+    
+    // Aggiorna le icone (es. arrow-left) in caso siano state resettate
+    if (window.lucide) lucide.createIcons({ nodes: [document.getElementById('btn-cancel-edit')] });
 }
 
 window.rimuoviAllegatoForm = function(index) {

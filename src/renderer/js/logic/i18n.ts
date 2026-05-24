@@ -8,8 +8,12 @@ i18n.load({
   it: itMessages
 });
 
-window.linguaAttuale = localStorage.getItem('archiview_lang') || 'it';
-i18n.activate(window.linguaAttuale);
+window.initLang = async function() {
+    const settings = await window.apiSettings.get();
+    window.linguaAttuale = settings.lang || 'it';
+    i18n.activate(window.linguaAttuale);
+    window.applicaTraduzioniHtml();
+};
 
 function _linguiExtraction() {
     i18n._({ id: "welcome_title", message: "Benvenuto in ArchiView" });
@@ -223,9 +227,11 @@ window.t = function(key, fallback) {
 }
 
 // Funzione globale per cambiare lingua
-window.cambiaLingua = function(lang) {
+window.cambiaLingua = async function(lang) {
     window.linguaAttuale = lang;
-    localStorage.setItem('archiview_lang', lang);
+    const settings = await window.apiSettings.get();
+    settings.lang = lang;
+    await window.apiSettings.save(settings);
     i18n.activate(lang);
     window.applicaTraduzioniHtml();
     

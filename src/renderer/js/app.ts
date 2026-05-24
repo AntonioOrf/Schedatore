@@ -1,6 +1,10 @@
 // @ts-nocheck
 document.addEventListener('DOMContentLoaded', async () => {
     try {
+        if (window.modalsHtml) {
+            document.body.insertAdjacentHTML('afterbegin', window.modalsHtml);
+        }
+
         if (window.apiBrowser && window.apiBrowser.getWorkspacePath) {
             const workspace = await window.apiBrowser.getWorkspacePath();
             
@@ -13,6 +17,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return;
             }
         }
+        
+        if (window.initTheme) await window.initTheme();
+        if (window.initLang) await window.initLang();
         
         await avviaApp();
     } catch (error) {
@@ -33,10 +40,11 @@ window.selezionaCartellaIniziale = async function() {
 async function avviaApp() {
     await initData();
 
-    const statoSalvato = localStorage.getItem('archiview_stato');
+    const settings = await window.apiSettings.get();
+    const statoSalvato = settings.appState;
     if (statoSalvato) {
         try {
-            const stato = JSON.parse(statoSalvato);
+            const stato = statoSalvato;
             if (stato.cartella) {
                 window.cartellaAttuale = stato.cartella;
             }
@@ -254,14 +262,17 @@ window.applicaTema = function(theme) {
     }
 };
 
-window.cambiaTemaSelezionato = function(theme) {
-    localStorage.setItem('theme', theme);
+window.cambiaTemaSelezionato = async function(theme) {
+    const settings = await window.apiSettings.get();
+    settings.theme = theme;
+    await window.apiSettings.save(settings);
     window.applicaTema(theme);
 };
 
 // Initialize Theme
-(function initTheme() {
-    const savedTheme = localStorage.getItem('theme') || 'system';
+window.initTheme = async function() {
+    const settings = await window.apiSettings.get();
+    const savedTheme = settings.theme || 'system';
     
     // Set the select element if it's already in the DOM (unlikely since it's in a modal, but safe)
     const sel = document.getElementById('settings-theme');
@@ -270,11 +281,12 @@ window.cambiaTemaSelezionato = function(theme) {
     window.applicaTema(savedTheme);
     
     // Listen for system theme changes
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-        const currentPref = localStorage.getItem('theme') || 'system';
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', async e => {
+        const s = await window.apiSettings.get();
+        const currentPref = s.theme || 'system';
         if (currentPref === 'system') {
             window.applicaTema('system');
         }
     });
-})();
+};
 

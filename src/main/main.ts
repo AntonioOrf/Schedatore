@@ -6,6 +6,7 @@ const { setupDatabaseIpc } = require('./ipc/databaseIpc');
 const { setupAttachmentsIpc, setupAttachmentsProtocol } = require('./ipc/attachmentsIpc');
 const { setupWorkspaceIpc } = require('./ipc/workspaceIpc');
 const { setupUpdaterIpc } = require('./ipc/updaterIpc');
+const { setupSettingsIpc } = require('./ipc/settingsIpc');
 
 // Protocollo custom per servire allegati
 protocol.registerSchemesAsPrivileged([
@@ -59,6 +60,7 @@ app.whenReady().then(() => {
   setupAttachmentsIpc();
   setupWorkspaceIpc();
   setupUpdaterIpc();
+  setupSettingsIpc();
 
   ipcMain.handle('apri-link-esterno', async (event, url) => {
     if (url.startsWith('http://') || url.startsWith('https://')) {

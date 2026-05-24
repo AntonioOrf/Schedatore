@@ -23,4 +23,10 @@ contextBridge.exposeInMainWorld('apiBrowser', {
     installUpdate: () => ipcRenderer.invoke('install-update'),
     onUpdateProgress: (callback) => ipcRenderer.on('update-progress', (event, progressObj) => callback(progressObj)),
     onUpdateDownloaded: (callback) => ipcRenderer.on('update-downloaded', () => callback())
-});export {};
+});
+
+contextBridge.exposeInMainWorld('apiSettings', {
+    get: () => ipcRenderer.invoke('get-settings'),
+    save: (settings) => ipcRenderer.invoke('save-settings', settings)
+});
+export {};

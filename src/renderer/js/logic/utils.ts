@@ -12,7 +12,7 @@ window.escapeHTML = function(str) {
          .replace(/'/g, "&#039;");
 };
 
-window.salvaStatoPosizione = function() {
+window.salvaStatoPosizione = async function() {
     const vAdd = document.getElementById('view-add');
     const vTrasc = document.getElementById('view-trascrizione');
     let tabAttuale = 'list';
@@ -25,7 +25,12 @@ window.salvaStatoPosizione = function() {
         trascrizioneId: document.getElementById('trascrizione-id') ? document.getElementById('trascrizione-id').value : null,
         cartelleEspanse: Array.from(window.cartelleEspanse)
     };
-    localStorage.setItem('archiview_stato', JSON.stringify(stato));
+    
+    if (window.apiSettings) {
+        const settings = await window.apiSettings.get();
+        settings.appState = stato;
+        await window.apiSettings.save(settings);
+    }
 };
 
 const CONFIG_CAMPI = {
