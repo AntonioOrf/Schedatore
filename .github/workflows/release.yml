@@ -23,7 +23,7 @@ jobs:
           cache: "npm"
 
       - name: Installa le dipendenze
-        run: npm ci
+        run: npm install
 
       - name: Costruisci e pubblica la Release
         run: npm run publish-app
