@@ -37,6 +37,7 @@ function setupWorkspaceIpc() {
     const archiverModule = await import('archiver');
     return new Promise((resolve) => {
       const output = fs.createWriteStream(destPath);
+      // @ts-ignore
       const archive = new archiverModule.ZipArchive({ zlib: { level: 9 } });
 
       output.on('close', function() {
@@ -61,3 +62,4 @@ function setupWorkspaceIpc() {
 }
 
 module.exports = { setupWorkspaceIpc };
+export {};

@@ -49,3 +49,4 @@ function setupUpdaterIpc() {
 }
 
 module.exports = { setupUpdaterIpc };
+export {};

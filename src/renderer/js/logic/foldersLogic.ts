@@ -1,3 +1,4 @@
+// @ts-nocheck
 function aggiungiCartella() {
     document.getElementById('folder-name-input').value = '';
     document.getElementById('folder-modal').classList.remove('hidden-tab');

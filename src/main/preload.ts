@@ -23,4 +23,4 @@ contextBridge.exposeInMainWorld('apiBrowser', {
     installUpdate: () => ipcRenderer.invoke('install-update'),
     onUpdateProgress: (callback) => ipcRenderer.on('update-progress', (event, progressObj) => callback(progressObj)),
     onUpdateDownloaded: (callback) => ipcRenderer.on('update-downloaded', () => callback())
-});
+});export {};

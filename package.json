@@ -1,18 +1,20 @@
 {
   "name": "archiview",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Gestionale per manoscritti medievali",
   "author": "Antonio Orf",
   "repository": {
     "type": "git",
     "url": "https://github.com/AntonioOrf/ArchiView.git"
   },
-  "main": "src/main/main.js",
+  "main": "out/main/main.js",
   "scripts": {
     "build-css": "npx @tailwindcss/cli -i ./src/renderer/css/input.css -o ./src/renderer/css/tailwind.css --minify",
-    "start": "npm run build-css && electron .",
-    "pack": "npm run build-css && electron-builder --win",
-    "publish-app": "npm run build-css && electron-builder --win -p always"
+    "copy-assets": "shx mkdir -p out/renderer && shx cp -r src/renderer/index.html src/renderer/css src/renderer/vendor out/renderer/",
+    "build-ts": "tsc && npm run copy-assets",
+    "start": "npm run build-css && npm run build-ts && electron .",
+    "pack": "npm run build-css && npm run build-ts && electron-builder --win",
+    "publish-app": "npm run build-css && npm run build-ts && electron-builder --win -p always"
   },
   "build": {
     "generateUpdatesFilesForAllChannels": true,
@@ -21,6 +23,10 @@
     "directories": {
       "output": "dist"
     },
+    "files": [
+      "out/**/*",
+      "package.json"
+    ],
     "win": {
       "target": "nsis"
     },
@@ -42,9 +48,13 @@
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.3.0",
+    "@types/archiver": "^7.0.0",
+    "@types/node": "^25.9.1",
     "electron": "^39.8.5",
     "electron-builder": "^26.8.1",
-    "tailwindcss": "^4.3.0"
+    "shx": "^0.4.0",
+    "tailwindcss": "^4.3.0",
+    "typescript": "^6.0.3"
   },
   "dependencies": {
     "archiver": "^8.0.0",

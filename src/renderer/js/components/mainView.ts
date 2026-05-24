@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Helper per la ricerca profonda
 function objectContainsString(obj, str) {
     if (!obj) return false;

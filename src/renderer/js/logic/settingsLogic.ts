@@ -1,3 +1,4 @@
+// @ts-nocheck
 window.apriImpostazioni = async function() {
     document.getElementById('settings-modal').classList.remove('hidden-tab');
     if (window.apiBrowser && window.apiBrowser.getWorkspacePath) {
