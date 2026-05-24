@@ -8,13 +8,15 @@ out/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
+package-lock.json
+package.json
 # Eseguibili e binari
 electron.exe
 *.exe
 *.dll
 *.so
 *.dylib
+
 
 # File temporanei di sistema
 Thumbs.db
