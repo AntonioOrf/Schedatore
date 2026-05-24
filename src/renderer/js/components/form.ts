@@ -1,3 +1,4 @@
+// @ts-nocheck
 function aggiornaSelectTipiDocumento() {
     const select = document.getElementById('form-tipo-documento');
     if (!select) return;

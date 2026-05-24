@@ -28,3 +28,4 @@ function setupDatabaseIpc() {
 }
 
 module.exports = { setupDatabaseIpc };
+export {};

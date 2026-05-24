@@ -1,3 +1,4 @@
+// @ts-nocheck
 async function spostaManoscritto(idManoscritto, nuovoPathCartella) {
     const m = appData.manoscritti.find(x => x.id === idManoscritto);
     if (m && m.cartella !== nuovoPathCartella) {

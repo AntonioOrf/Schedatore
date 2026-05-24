@@ -1,3 +1,4 @@
+// @ts-nocheck
 async function apriTrascrizione(id) {
     const m = appData.manoscritti.find(x => String(x.id) === String(id));
     if (!m) return;

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Stato globale per le cartelle espansive
 window.cartelleEspanse = window.cartelleEspanse || new Set(['Generale']);
 

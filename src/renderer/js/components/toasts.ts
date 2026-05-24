@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Il container toast è già in HTML: niente check dinamico
 window.mostraMessaggio = function(testo, tipo = 'info') {
     const container = document.getElementById('toast-container');

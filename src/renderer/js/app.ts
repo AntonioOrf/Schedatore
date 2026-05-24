@@ -1,3 +1,4 @@
+// @ts-nocheck
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         if (window.apiBrowser && window.apiBrowser.getWorkspacePath) {

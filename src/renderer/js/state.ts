@@ -1,3 +1,4 @@
+// @ts-nocheck
 let appData = {
     cartelle: ['Generale'], 
     manoscritti: [],

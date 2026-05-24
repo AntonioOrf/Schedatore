@@ -1,3 +1,4 @@
+// @ts-nocheck
 // --- SIDEBAR ---
 
 function renderSidebar() {

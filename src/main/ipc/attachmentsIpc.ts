@@ -49,3 +49,4 @@ function setupAttachmentsProtocol() {
 }
 
 module.exports = { setupAttachmentsIpc, setupAttachmentsProtocol };
+export {};
