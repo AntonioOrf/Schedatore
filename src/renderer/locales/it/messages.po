@@ -947,3 +947,69 @@ msgstr "Trascrizione salvata con successo."
 #: src/renderer/js/logic/i18n.ts
 msgid "placeholder_val_beni_dinamici"
 msgstr "Valore (es. 10 fiorini)"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "btn_report_issue"
+msgstr "Segnala problema"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "settings_support"
+msgstr "Supporto"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "settings_support_desc"
+msgstr "Hai riscontrato dei problemi o hai dei suggerimenti? Segnalalo su GitHub."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "modal_report_issue"
+msgstr "Segnala un problema"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "issue_title"
+msgstr "Titolo della segnalazione *"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "placeholder_issue_title"
+msgstr "Es. Errore durante il salvataggio o caricamento file..."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "issue_type"
+msgstr "Tipo di segnalazione"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "issue_type_bug"
+msgstr "Bug / Errore del programma"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "issue_type_enhancement"
+msgstr "Suggerimento / Nuova funzionalità"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "issue_type_feedback"
+msgstr "Feedback generico"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "issue_description"
+msgstr "Descrizione dettagliata *"
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "placeholder_issue_desc"
+msgstr "Descrivi il problema, come riprodurlo, o cosa ti aspetti che accada..."
+
+#. js-lingui-explicit-id
+#: src/renderer/js/logic/i18n.ts
+msgid "btn_submit_issue"
+msgstr "Apri su GitHub"
+
