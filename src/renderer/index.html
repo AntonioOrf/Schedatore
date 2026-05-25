@@ -4,15 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ArchiView</title>
-    <!-- Inizializzazione immediata del tema per evitare il flash bianco -->
     <script>
         (function() {
             try {
-                // Il tema verrà caricato da AppData via IPC all'avvio dell'app.
-                // Il colore di sfondo di base è già gestito dalla BrowserWindow in main.ts.
-                if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                    document.documentElement.classList.add('dark-theme');
-                }
+                const savedTheme = localStorage.getItem('theme') || 'system';
+                const isDark = savedTheme === 'dark' || (savedTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                if (isDark) document.documentElement.classList.add('dark-theme');
+            } catch (e) {}
+        })();
+    </script>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: local-asset:; frame-src 'self' local-asset:; connect-src 'self' https://api.github.com;">
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArchiView</title>
+    <script>
+        (function() {
+            try {
+                const savedTheme = localStorage.getItem('theme') || 'system';
+                const isDark = savedTheme === 'dark' || (savedTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                if (isDark) document.documentElement.classList.add('dark-theme');
             } catch (e) {}
         })();
     </script>
@@ -22,9 +35,9 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="min-h-screen p-4 md:p-6 flex flex-col h-screen overflow-hidden">
-    <!-- Modals in templates.js injected dynamically -->
 
-    <!-- Header Fisso In Alto -->
+
+
     <header class="panel-glass shrink-0 mb-6 flex flex-wrap items-center gap-2 p-2">
         <button onclick="toggleSidebar()" class="btn btn-ghost btn-icon" data-i18n-title="tooltip_sidebar">
             <i data-lucide="panel-left" class="w-5 h-5"></i>
@@ -51,16 +64,12 @@
         </button>
     </header>
 
-    <!-- Toast Notifications Container -->
     <div id="toast-container" class="fixed bottom-4 right-4 z-100 flex flex-col gap-2 pointer-events-none"></div>
 
-    <!-- Layout a due colonne -->
     <div class="flex-1 flex flex-col md:flex-row gap-6 overflow-hidden">
         
-        <!-- SIDEBAR: Pannelli Dinamici -->
         <aside id="sidebar" class="w-full md:w-72 shrink-0 panel-glass flex flex-col h-full overflow-hidden transition-all duration-300">
             
-            <!-- PANNELLO CARTELLE -->
             <div id="sidebar-folders" class="flex flex-col flex-1 min-h-0">
                 <div class="panel-header p-4 flex justify-between items-center shrink-0">
                     <h2 class="font-bold flex items-center gap-2">
@@ -70,11 +79,9 @@
                     </button>
                 </div>
                 <div id="folder-list" class="flex-1 p-3 overflow-y-auto custom-scroll space-y-1">
-                    <!-- Le cartelle verranno generate qui dal JS -->
                 </div>
             </div>
 
-            <!-- PANNELLO RICERCA -->
             <div id="sidebar-search" class="hidden-tab flex flex-col flex-1 min-h-0">
                 <div class="panel-header p-4 shrink-0">
                     <h2 class="font-bold flex items-center gap-2 mb-3">
@@ -86,11 +93,9 @@
                 </div>
                 <div class="p-2 bg-stone-100 border-b border-stone-200 text-xs font-semibold text-stone-500 shrink-0" data-i18n="title_suggestions">SUGGERIMENTI</div>
                 <div id="search-suggestions" class="flex-1 overflow-y-auto custom-scroll">
-                    <!-- Suggerimenti dinamici -->
                 </div>
             </div>
 
-            <!-- PANNELLO TAG -->
             <div id="sidebar-tags" class="hidden-tab flex flex-col flex-1 min-h-0">
                 <div class="panel-header p-4 shrink-0">
                     <h2 class="font-bold flex items-center gap-2 mb-3">
@@ -103,197 +108,44 @@
                 </div>
                 <div class="p-2 bg-stone-100 border-b border-stone-200 text-xs font-semibold text-stone-500 shrink-0" data-i18n="title_available_tags">TAG DISPONIBILI</div>
                 <div id="tag-list" class="flex-1 overflow-y-auto custom-scroll p-2 flex flex-col gap-1">
-                    <!-- Lista Tag dinamica -->
                 </div>
             </div>
 
-            <!-- FOOTER IMPOSTAZIONI -->
-            <div class="panel-header p-2 shrink-0 mt-auto" style="border-top: 1px solid var(--color-border-light); border-bottom: none;">
+            <div class="panel-header p-2 shrink-0 mt-auto flex flex-col gap-1.5" style="border-top: 1px solid var(--color-border-light); border-bottom: none;">
                 <button onclick="apriImpostazioni()" class="btn btn-ghost w-full justify-center">
-                    <i data-lucide="settings" class="w-4 h-4"></i> <span data-i18n="modal_settings">Impostazioni</span></button>
+                    <i data-lucide="settings" class="w-4 h-4"></i> <span data-i18n="modal_settings">Impostazioni</span>
+                </button>
+                <button onclick="apriIssueModal()" class="btn btn-ghost w-full justify-center text-red-600 dark:text-red-400">
+                    <i data-lucide="alert-circle" class="w-4 h-4 text-red-600 dark:text-red-400"></i> <span data-i18n="btn_report_issue">Segnala problema</span>
+                </button>
             </div>
 
         </aside>
 
-        <!-- MAIN AREA: Contenuto Principale -->
         <main class="flex-1 panel-glass p-6 h-full overflow-y-auto custom-scroll">
-            
-            <!-- VISTA: LISTA MANOSCRITTI -->
-            <div id="view-list" class="fade-in h-full flex flex-col">
-                
-                <div class="flex flex-col md:flex-row justify-between items-end gap-4 border-b border-stone-200 pb-4 mb-4 shrink-0">
-                    <div>
-                        <h2 class="text-2xl font-bold text-amber-800 flex items-center gap-2">
-                            <i data-lucide="folder-open" class="w-6 h-6"></i>
-                            <span id="titolo-cartella-attuale">Generale</span>
-                        </h2>
-                        <span id="counter-results" class="text-sm text-stone-500 font-medium mt-1 block">Caricamento...</span>
-                    </div>
-                </div>
-                
-                <!-- Griglia -->
-                <div id="manoscritti-grid" class="grid grid-cols-1 xl:grid-cols-2 gap-5 pb-6"></div>
-                
-                <!-- Controlli Paginazione -->
-                <div id="pagination-controls" class="hidden justify-center items-center gap-4 mt-2 mb-10">
-                    <button onclick="cambiaPagina(-1)" class="btn btn-secondary" id="btn-prev-page"><i data-lucide="chevron-left" class="w-4 h-4"></i> <span data-i18n="btn_prev">Precedente</span></button>
-                    <span id="page-indicator" class="text-stone-600 font-medium text-sm"></span>
-                    <button onclick="cambiaPagina(1)" class="btn btn-secondary" id="btn-next-page"><span data-i18n="btn_next">Successiva</span> <i data-lucide="chevron-right" class="w-4 h-4"></i></button>
-                </div>
-
-                <!-- Stato Vuoto -->
-                <div id="empty-state" class="hidden text-center py-16 mt-10 bg-stone-50 rounded-sm border border-dashed border-stone-300">
-                    <i data-lucide="file-box" class="w-12 h-12 text-stone-300 mx-auto mb-3"></i>
-                    <p class="text-stone-500 italic text-lg mb-4" data-i18n="folder_empty">La cartella è vuota.</p>
-                    <button onclick="eliminaCartellaAttuale()" id="btn-delete-folder" class="hidden btn btn-ghost text-red-600 hover:text-red-800 mx-auto text-sm">
-                        <i data-lucide="trash" class="w-4 h-4"></i> <span data-i18n="btn_delete_folder">Elimina questa cartella</span></button>
-                </div>
-            </div>
-
-            <!-- VISTA: FORM COMPILAZIONE -->
-            <div id="view-add" class="hidden-tab fade-in max-w-2xl mx-auto pb-10">
-                <div class="flex justify-between items-center border-b border-stone-200 pb-2 mb-6">
-                    <h2 id="form-title" class="text-2xl font-semibold text-amber-800" data-i18n="title_new_record">Compila Nuova Scheda</h2>
-                    <button id="btn-cancel-edit" onclick="cancelEdit()" class="btn btn-ghost text-sm text-stone-600 hover:text-stone-900">
-                        <i data-lucide="arrow-left" class="w-4 h-4 inline-block mr-1"></i> <span data-i18n="btn_cancel_edit">Indietro / Annulla</span>
-                    </button>
-                </div>
-                
-                <form id="manoscritto-form" class="space-y-5 panel-solid p-6 shadow-inner" style="background-color: var(--color-bg-base);">
-                    <input type="hidden" id="form-id">
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-4">
-                        <!-- Selezione Cartella -->
-                        <div class="p-3 panel-solid" style="background-color: var(--color-primary-light); border-color: var(--color-primary-border);">
-                            <label class="form-label text-amber-900">
-                                <i data-lucide="folder" class="w-4 h-4"></i> <span data-i18n="label_folder">Cartella:</span>
-                            </label>
-                            <select id="form-cartella" class="form-input" style="border-color: var(--color-primary-border);">
-                                <!-- Popolato da JS -->
-                            </select>
-                        </div>
-                        
-                        <!-- Selezione Tipo Documento -->
-                        <div class="p-3 panel-solid">
-                            <label class="form-label">
-                                <i data-lucide="file-type" class="w-4 h-4"></i> <span data-i18n="label_doc_type">Tipo Documento:</span>
-                            </label>
-                            <select id="form-tipo-documento" onchange="renderDynamicFields()" class="form-input"></select>
-                        </div>
-                    </div>
-
-                    <!-- Identificativo Fisso -->
-                    <div class="form-group">
-                        <label class="form-label" data-i18n="label_identifier">Identificativo / Segnatura *</label>
-                        <input required id="form-segnatura" data-i18n-placeholder="placeholder_identifier" class="form-input">
-                    </div>
-
-                    <!-- Container Campi Dinamici -->
-                    <div id="form-dynamic-fields" class="space-y-5">
-                        <!-- Popolato da JS -->
-                    </div>
-
-                    <!-- Allegati -->
-                    <div class="space-y-1 border-t border-b border-stone-200 py-4 my-2 bg-stone-100/50 px-3 rounded-sm">
-                        <label class="form-label" data-i18n="label_attachments">Allega Documenti (Foto o PDF)</label>
-                        <input type="file" id="form-allegato" accept="image/*,.pdf" multiple class="form-input file:mr-4 file:py-1.5 file:px-3 file:rounded-sm file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 cursor-pointer p-1">
-                        <input type="hidden" id="form-allegati" value="[]">
-                        
-                        <div id="form-allegati-list" class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
-                        <div id="form-allegati-new-preview" class="text-xs text-amber-700 mt-2 font-medium hidden"></div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label" data-i18n="label_tags">Tags (separati da virgola)</label>
-                        <input id="form-tags" data-i18n-placeholder="placeholder_tags_input" class="form-input">
-                    </div>
-
-                    <div class="pt-4">
-                        <button type="submit" id="btn-submit-form" class="btn btn-primary w-full py-3 text-lg">
-                            <span id="testo-btn-submit" data-i18n="btn_save_record">Salva Scheda</span>
-                        </button>
-                    </div>
-                </form>
-            </div>
         </main>
     </div>
 
-    <!-- VISTA: TRASCRIZIONE (A SCHERMO INTERO) -->
-    <div id="view-trascrizione" class="fixed inset-0 z-40 hidden-tab fade-in flex flex-col p-4 md:p-6 overflow-hidden" style="background-color: var(--color-bg-base);">
-        <!-- Header Trascrizione -->
-        <header class="shrink-0 mb-4 flex items-center justify-between pb-4 p-3 panel-glass">
-            <div class="flex items-center gap-4">
-                <button onclick="chiudiTrascrizione()" class="btn btn-secondary btn-icon">
-                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
-                </button>
-                <button id="btn-collapse-editor" onmousedown="event.preventDefault()" onclick="toggleFullscreenAllegato()" class="btn btn-secondary btn-icon shadow-sm" data-i18n-title="tooltip_collapse">
-                    <i data-lucide="panel-left-close" class="w-5 h-5"></i>
-                </button>
-                <div>
-                    <h2 id="trascrizione-title" class="text-2xl font-bold flex items-center gap-2" style="color: var(--color-primary);"> <span data-i18n="title_transcription">Trascrizione</span></h2>
-                    <p id="trascrizione-subtitle" class="text-sm italic" style="color: var(--color-text-muted);"></p>
-                </div>
-            </div>
-            
-            <button onmousedown="event.preventDefault()" onclick="salvaTrascrizione()" data-i18n-title="btn_save" class="btn btn-primary px-6 py-2 shadow-md text-lg">
-                <span data-i18n="btn_save_transcription">Salva Trascrizione</span>
-            </button>
-        </header>
-
-        <!-- Split Screen Layout -->
-        <div id="trascrizione-container" class="flex-1 flex flex-col lg:flex-row gap-2 overflow-hidden relative">
-            
-            <!-- Left Panel: Text Editor -->
-            <div id="trascrizione-editor-panel" style="width: 50%;" class="flex flex-col bg-white shadow-xl border border-stone-200/50 rounded-sm overflow-hidden transition-all duration-300 shrink-0 min-w-[250px]">
-                <!-- Toolbar -->
-                <div class="bg-stone-100 border-b border-stone-200 p-2 flex flex-wrap gap-2 items-center">
-                    <button onmousedown="event.preventDefault()" onclick="document.execCommand('bold', false, null)" class="btn btn-ghost btn-icon rounded" data-i18n-title="tooltip_bold"><i data-lucide="bold" class="w-4 h-4"></i></button>
-                    <button onmousedown="event.preventDefault()" onclick="document.execCommand('italic', false, null)" class="btn btn-ghost btn-icon rounded" data-i18n-title="tooltip_italic"><i data-lucide="italic" class="w-4 h-4"></i></button>
-                    <button onmousedown="event.preventDefault()" onclick="document.execCommand('underline', false, null)" class="btn btn-ghost btn-icon rounded" data-i18n-title="tooltip_underline"><i data-lucide="underline" class="w-4 h-4"></i></button>
-                    <div class="w-px h-6 bg-stone-300 mx-1"></div>
-                    <button onmousedown="event.preventDefault()" onclick="document.execCommand('insertUnorderedList', false, null)" class="btn btn-ghost btn-icon rounded" data-i18n-title="tooltip_ul"><i data-lucide="list" class="w-4 h-4"></i></button>
-                    <button onmousedown="event.preventDefault()" onclick="document.execCommand('insertOrderedList', false, null)" class="btn btn-ghost btn-icon rounded" data-i18n-title="tooltip_ol"><i data-lucide="list-ordered" class="w-4 h-4"></i></button>
-                    
-                    <div class="flex-1"></div>
-                    
-                    <!-- Pulsante Carica Immagine (visibile solo se manca l'allegato) -->
-                    <button id="btn-carica-allegato-trasc" onclick="document.getElementById('trasc-file-input').click()" class="btn hidden btn-secondary border border-amber-300/50">
-                        <i data-lucide="upload" class="w-4 h-4"></i> <span data-i18n="btn_add_image_pdf">Aggiungi Immagine/PDF</span></button>
-                    <input type="file" id="trasc-file-input" class="hidden" accept="image/*,.pdf" onchange="caricaAllegatoTrascrizione(event)">
-                </div>
-                <!-- Area di Testo -->
-                <div class="flex-1 overflow-y-auto cursor-text p-6 bg-white" onclick="if(event.target === this) document.getElementById('trascrizione-editor').focus()">
-                    <div id="trascrizione-editor" contenteditable="true" class="min-h-full outline-none text-lg leading-relaxed text-stone-800 select-text" style="font-family: 'Georgia', serif; outline: none;"></div>
-                </div>
-            </div>
-
-            <!-- Resizer -->
-            <div id="trascrizione-resizer" class="lg:flex w-2 cursor-col-resize bg-stone-200 hover:bg-amber-400 active:bg-amber-500 border border-stone-300 rounded-sm items-center justify-center group transition-colors hidden z-10 shrink-0" title="Trascina per ridimensionare">
-                <i data-lucide="grip-vertical" class="w-4 h-4 text-stone-400 group-hover:text-white pointer-events-none"></i>
-            </div>
-
-            <!-- Right Panel: Attachment Viewer -->
-            <div id="trascrizione-allegato-panel" class="flex-1 bg-stone-200/50 shadow-inner border border-stone-300/50 rounded-sm overflow-hidden relative flex flex-col transition-all duration-300 hidden-tab min-w-[250px]">
-                <div id="trascrizione-thumbnails" class="flex gap-2 p-2 bg-stone-100 border-b border-stone-300 overflow-x-auto hidden-tab shrink-0"></div>
-                <div class="flex-1 relative flex justify-center items-center overflow-hidden group">
-                    <button id="btn-prev-allegato" onclick="cambiaAllegatoRelativo(-1)" data-i18n-title="tooltip_prev" class="btn btn-icon absolute left-2 top-1/2 -translate-y-1/2 rounded-full opacity-0 group-hover:opacity-100 disabled:opacity-0 z-10 hidden" style="background-color: rgba(41, 37, 36, 0.6); color: white;"><i data-lucide="chevron-left" class="w-6 h-6"></i></button>
-                    <img id="trasc-img-preview" class="max-w-full max-h-full object-contain hidden" />
-                    <iframe id="trasc-pdf-preview" class="w-full h-full bg-white hidden" src=""></iframe>
-                    <button id="btn-next-allegato" onclick="cambiaAllegatoRelativo(1)" data-i18n-title="tooltip_next" class="btn btn-icon absolute right-2 top-1/2 -translate-y-1/2 rounded-full opacity-0 group-hover:opacity-100 disabled:opacity-0 z-10 hidden" style="background-color: rgba(41, 37, 36, 0.6); color: white;"><i data-lucide="chevron-right" class="w-6 h-6"></i></button>
-                    <div id="trasc-no-allegato" class="text-center p-8 hidden">
-                        <i data-lucide="image-off" class="w-16 h-16 mx-auto text-stone-400 mb-4"></i>
-                        <p class="text-stone-500 font-medium" data-i18n="no_attachment">Nessun allegato disponibile per questa scheda.</p>
-                    </div>
-                </div>
-            </div>
-            
-        </div>
-        <input type="hidden" id="trascrizione-id">
-    </div>
+    <!-- Nuovi componenti Modali -->
+    <script src="js/components/modals/welcomeModal.js"></script>
+    <script src="js/components/modals/imagePdfModal.js"></script>
+    <script src="js/components/modals/folderModal.js"></script>
+    <script src="js/components/modals/newTypeModal.js"></script>
+    <script src="js/components/modals/manageTypesModal.js"></script>
+    <script src="js/components/modals/deleteModal.js"></script>
+    <script src="js/components/modals/unsavedModal.js"></script>
+    <script src="js/components/modals/renameModal.js"></script>
+    <script src="js/components/modals/docsModal.js"></script>
+    <script src="js/components/modals/settingsModal.js"></script>
+    
+    <!-- Nuovi componenti Viste e Banners -->
+    <script src="js/components/banners.js"></script>
+    <script src="js/components/views/viewList.js"></script>
+    <script src="js/components/views/viewAdd.js"></script>
+    <script src="js/components/views/viewTrascrizione.js"></script>
 
     <!-- Script Application -->
     <script src="js/logic/i18n.js"></script>
-    <script src="js/components/templates.js"></script>
     <script src="js/state.js"></script>
     <!-- Logic -->
     <script src="js/logic/utils.js"></script>
@@ -303,12 +155,12 @@
     <script src="js/logic/typesLogic.js"></script>
     <script src="js/logic/settingsLogic.js"></script>
 
-    <!-- Components -->
     <script src="js/components/toasts.js"></script>
     <script src="js/components/modals.js"></script>
     <script src="js/components/form.js"></script>
     <script src="js/components/mainView.js"></script>
     <script src="js/components/sidebar.js"></script>
+    <script src="js/components/issueModal.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

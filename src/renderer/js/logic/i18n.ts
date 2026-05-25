@@ -217,6 +217,19 @@ function _linguiExtraction() {
     i18n._({ id: "msg_downloading", message: "Scaricamento:" });
     i18n._({ id: "btn_restart_install", message: "Riavvia e Installa" });
     i18n._({ id: "btn_installing", message: "Installazione..." });
+    i18n._({ id: "btn_report_issue", message: "Segnala problema" });
+    i18n._({ id: "settings_support", message: "Supporto" });
+    i18n._({ id: "settings_support_desc", message: "Hai riscontrato dei problemi o hai dei suggerimenti? Segnalalo su GitHub." });
+    i18n._({ id: "modal_report_issue", message: "Segnala un problema" });
+    i18n._({ id: "issue_title", message: "Titolo della segnalazione *" });
+    i18n._({ id: "placeholder_issue_title", message: "Es. Errore durante il salvataggio o caricamento file..." });
+    i18n._({ id: "issue_type", message: "Tipo di segnalazione" });
+    i18n._({ id: "issue_type_bug", message: "Bug / Errore del programma" });
+    i18n._({ id: "issue_type_enhancement", message: "Suggerimento / Nuova funzionalità" });
+    i18n._({ id: "issue_type_feedback", message: "Feedback generico" });
+    i18n._({ id: "issue_description", message: "Descrizione dettagliata *" });
+    i18n._({ id: "placeholder_issue_desc", message: "Descrivi il problema, come riprodurlo, o cosa ti aspetti che accada..." });
+    i18n._({ id: "btn_submit_issue", message: "Apri su GitHub" });
 }
 
 // Wrapper per compatibilità con il codice esistente
