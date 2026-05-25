@@ -1,6 +1,10 @@
 // @ts-nocheck
 document.addEventListener('DOMContentLoaded', async () => {
     try {
+        if (window.modalsHtml) {
+            document.body.insertAdjacentHTML('afterbegin', window.modalsHtml);
+        }
+
         if (window.apiBrowser && window.apiBrowser.getWorkspacePath) {
             const workspace = await window.apiBrowser.getWorkspacePath();
             
@@ -13,6 +17,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return;
             }
         }
+        
+        if (window.initTheme) await window.initTheme();
+        if (window.initLang) await window.initLang();
         
         await avviaApp();
     } catch (error) {
@@ -33,10 +40,11 @@ window.selezionaCartellaIniziale = async function() {
 async function avviaApp() {
     await initData();
 
-    const statoSalvato = localStorage.getItem('archiview_stato');
+    const settings = await window.apiSettings.get();
+    const statoSalvato = settings.appState;
     if (statoSalvato) {
         try {
-            const stato = JSON.parse(statoSalvato);
+            const stato = statoSalvato;
             if (stato.cartella) {
                 window.cartellaAttuale = stato.cartella;
             }
@@ -45,12 +53,6 @@ async function avviaApp() {
             }
             window.statoIniziale = stato;
         } catch (e) {}
-    }
-
-    // Allinea il menu a tendina delle impostazioni lingua con la lingua caricata
-    const langSelect = document.getElementById('settings-language');
-    if (langSelect && window.linguaAttuale) {
-        langSelect.value = window.linguaAttuale;
     }
 
     // Primo render per popolare l'interfaccia all'avvio
@@ -105,7 +107,7 @@ async function avviaApp() {
     // Scorciatoie da tastiera
     document.addEventListener('keydown', function(e) {
         const vTrascrizione = document.getElementById('view-trascrizione');
-        
+
         // Salva trascrizione con Ctrl+S o sfoglia
         if (vTrascrizione && !vTrascrizione.classList.contains('hidden-tab')) {
             if (e.altKey && e.key === 'ArrowLeft') {
@@ -159,7 +161,7 @@ async function avviaApp() {
             }
         }
 
-        // Esc -> Chiudi modali aperte, o esci da trascrizione/modifica, o pulisci la barra di ricerca
+        // Esc -> Chiudi modali aperte o pulisci la barra di ricerca
         if (e.key === 'Escape') {
             const modals = document.querySelectorAll('.modal-overlay:not(.hidden-tab)');
             if (modals.length > 0) {
@@ -167,21 +169,12 @@ async function avviaApp() {
                 // Eventuali cleanup
                 if (typeof editingTypeId !== 'undefined') editingTypeId = null;
             } else {
-                const vTrascrizione = document.getElementById('view-trascrizione');
-                const vAdd = document.getElementById('view-add');
-                
-                if (vTrascrizione && !vTrascrizione.classList.contains('hidden-tab')) {
-                    if (typeof chiudiTrascrizione === 'function') chiudiTrascrizione();
-                } else if (vAdd && !vAdd.classList.contains('hidden-tab')) {
-                    if (typeof cancelEdit === 'function') cancelEdit();
-                } else {
-                    const searchInput = document.getElementById('search-input');
-                    if (searchInput && document.activeElement === searchInput) {
-                        searchInput.value = '';
-                        searchInput.blur();
-                        if (typeof renderMain === 'function') renderMain();
-                        if (typeof renderSearchSuggestions === 'function') renderSearchSuggestions();
-                    }
+                const searchInput = document.getElementById('search-input');
+                if (searchInput && document.activeElement === searchInput) {
+                    searchInput.value = '';
+                    searchInput.blur();
+                    if (typeof renderMain === 'function') renderMain();
+                    if (typeof renderSearchSuggestions === 'function') renderSearchSuggestions();
                 }
             }
         }
@@ -269,14 +262,17 @@ window.applicaTema = function(theme) {
     }
 };
 
-window.cambiaTemaSelezionato = function(theme) {
-    localStorage.setItem('theme', theme);
+window.cambiaTemaSelezionato = async function(theme) {
+    const settings = await window.apiSettings.get();
+    settings.theme = theme;
+    await window.apiSettings.save(settings);
     window.applicaTema(theme);
 };
 
 // Initialize Theme
-(function initTheme() {
-    const savedTheme = localStorage.getItem('theme') || 'system';
+window.initTheme = async function() {
+    const settings = await window.apiSettings.get();
+    const savedTheme = settings.theme || 'system';
     
     // Set the select element if it's already in the DOM (unlikely since it's in a modal, but safe)
     const sel = document.getElementById('settings-theme');
@@ -285,11 +281,12 @@ window.cambiaTemaSelezionato = function(theme) {
     window.applicaTema(savedTheme);
     
     // Listen for system theme changes
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-        const currentPref = localStorage.getItem('theme') || 'system';
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', async e => {
+        const s = await window.apiSettings.get();
+        const currentPref = s.theme || 'system';
         if (currentPref === 'system') {
             window.applicaTema('system');
         }
     });
-})();
+};
 

@@ -12,16 +12,28 @@ const state = {
   mainWindow: null
 };
 
-function loadWorkspace() {
+function getAllSettings() {
   if (fs.existsSync(settingsPath)) {
     try {
-      const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
-      if (settings.workspacePath && fs.existsSync(settings.workspacePath)) {
-        return settings.workspacePath;
-      }
-    } catch (error) { 
-      console.error("Errore lettura settings:", error); 
+      return JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
+    } catch (error) {
+      console.error("Errore lettura settings:", error);
     }
+  }
+  return {};
+}
+
+function saveAllSettings(newSettings) {
+  const current = getAllSettings();
+  const updated = { ...current, ...newSettings };
+  fs.writeFileSync(settingsPath, JSON.stringify(updated, null, 2));
+  return updated;
+}
+
+function loadWorkspace() {
+  const settings = getAllSettings();
+  if (settings.workspacePath && fs.existsSync(settings.workspacePath)) {
+    return settings.workspacePath;
   }
   return null;
 }
@@ -35,12 +47,14 @@ function initWorkspace(folderPath) {
     fs.mkdirSync(state.attachmentsDirPath, { recursive: true });
   }
 
-  fs.writeFileSync(settingsPath, JSON.stringify({ workspacePath: folderPath }, null, 2));
+  saveAllSettings({ workspacePath: folderPath });
 }
 
 module.exports = {
   state,
   loadWorkspace,
-  initWorkspace
+  initWorkspace,
+  getAllSettings,
+  saveAllSettings
 };
 export {};

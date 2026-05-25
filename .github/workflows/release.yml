@@ -19,11 +19,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: "npm"
 
       - name: Installa le dipendenze
-        run: npm ci
+        run: npm install
 
       - name: Costruisci e pubblica la Release
         run: npm run publish-app
