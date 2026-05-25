@@ -1,82 +1,81 @@
+_Read this in [Italian](README.md)_
 
 <img padding=20i width="1920" height="1280" alt="914_1x_shots_so" src="https://github.com/user-attachments/assets/973bffbb-f596-47ad-97d3-151f5f10075b" />
 
-
 # ArchiView
 
-**ArchiView** è un'applicazione desktop (creata con Electron) progettata come gestionale offline per catalogare, archiviare e trascrivere manoscritti e documenti storici.
+**ArchiView** is a desktop application (built with Electron) designed as an offline management tool to catalog, archive, and transcribe manuscripts and historical documents.
 
-## Ambiente di Trascrizione Integrato
+## Integrated Transcription Environment
+
 <img width="1920" height="1280" alt="83_1x_shots_so" src="https://github.com/user-attachments/assets/07bbe09f-12a6-4948-abac-83dd21c9fe0e" />
 
- Un editor di testo con vista "split-screen" per affiancare comodamente le immagini o i PDF originali del documento durante il lavoro di trascrizione.
+A text editor with a "split-screen" view to comfortably display the original images or PDFs of the document side-by-side during transcription work.
 
- ## Gestione Modulare dei Dati
- 
-   <img width="1920" height="1280" alt="832_1x_shots_so" src="https://github.com/user-attachments/assets/ecd03e76-77de-4eff-b733-ad6bbea0b084" />
+## Modular Data Management
 
-Il cuore dell'applicazione si basa su un sistema di modelli di documento completamente dinamico. Puoi utilizzare i modelli predefiniti (Imbreviature notarili, Atti giudiziari, Documenti fiscali) o assemblare nuovi tipi di documento scegliendo solo i campi informativi di cui hai realmente bisogno (Titolo, Autori, Segnatura, Supporto, ecc.). L'interfaccia si adatterà automaticamente al modello scelto.
+<img width="1920" height="1280" alt="832_1x_shots_so" src="https://github.com/user-attachments/assets/ecd03e76-77de-4eff-b733-ad6bbea0b084" />
 
+The core of the application relies on a fully dynamic document template system. You can use predefined templates (Notarial deeds, Judicial acts, Tax documents) or assemble new document types by choosing only the data fields you actually need (Title, Authors, Shelfmark, Medium, etc.). The interface will automatically adapt to the chosen template.
 
+## Additional Features
 
-## Ulteriori Caratteristiche
+- **Folder Organization**: Manage your archives in a hierarchical structure of folders and subfolders for perfect organization.
+- **Attachment Management**: Attach and view scans, photographs, or PDF files associated with your records directly within the application.
+- **Advanced Search and Tags**: Quickly find any record through global text search or by filtering the archive via associated tags.
+- **Open and Independent Data Format**: No proprietary databases or cloud lock-in (no vendor lock-in). The entire data lifecycle takes place offline on your device. Documents are saved within your Workspace folder in a structured JSON format, which is clear, inspectable, and easily manipulable even outside the application.
+- **Portability and Instant Backup**: You have total and material control over your data. Simply copy your Workspace folder to a USB drive to transfer the entire project to another computer. Additionally, a native feature is integrated to generate your entire archive (JSON database and attached files) into a convenient backup ZIP file with a single click.
 
-- **Organizzazione a Cartelle**: Gestisci i tuoi archivi in una struttura gerarchica di cartelle e sottocartelle per un ordine perfetto.
-- **Gestione Allegati**: Allega e visualizza direttamente nell'applicazione scansioni, fotografie o file PDF associati alle tue schede.
-- **Ricerca Avanzata e Tag**: Trova rapidamente qualsiasi scheda attraverso la ricerca globale testuale o filtrando l'archivio tramite i tag associati.
-- **Formato Dati Aperto e Indipendente**: Nessun database proprietario o cloud bloccante (no vendor lock-in). Tutto il ciclo di vita dei dati avviene offline sul tuo dispositivo. I documenti vengono salvati all'interno della cartella di lavoro (Workspace) in un formato JSON strutturato, chiaro, ispezionabile e facilmente manipolabile anche all'esterno dell'applicazione.
-- **Esportabilità e Backup Immediato**: Hai il controllo totale e materiale dei tuoi dati. È sufficiente copiare la tua cartella Workspace su una chiavetta per trasferire l'intero progetto su un altro computer. Inoltre, è integrata una funzione nativa per generare in un solo clic l'intero archivio (database JSON e file allegati) in un pratico file ZIP di backup.
+## Download and Installation:
 
-## Download e Installazione:
+The easiest way to use **ArchiView** is to download the latest release:
 
-Il modo più semplice per utilizzare **ArchiView** è scaricare l'ultima versione:
-
-1. Vai alla pagina [Releases](https://github.com/AntonioOrf/Schedatore/releases) del progetto su GitHub.
-2. Scarica il file eseguibile per il tuo sistema operativo.
-3. Avvia direttamente il file scaricato.
+1. Go to the [Releases](https://github.com/AntonioOrf/Schedatore/releases) page of the project on GitHub.
+2. Download the executable file for your operating system.
+3. Run the downloaded file directly.
 
 ---
 
-## Per gli Sviluppatori (Compilazione da sorgente)
+## For Developers (Building from source)
 
-Se desideri modificare il codice o avviare l'applicazione in ambiente di sviluppo, assicurati di avere [Node.js](https://nodejs.org/) installato sul tuo sistema, quindi:
+If you want to modify the code or run the application in a development environment, make sure you have [Node.js](https://nodejs.org/) installed on your system, then:
 
-1. Clona questo repository o estrai i file del progetto.
-2. Apri il terminale nella directory principale (dove si trova il file `package.json`).
-3. Installa le dipendenze:
+1. Clone this repository or extract the project files.
+2. Open the terminal in the root directory (where the `package.json` file is located).
+3. Install the dependencies:
    ```bash
    npm install
    ```
-4. Avvia l'applicazione:
+4. Start the application:
    ```bash
    npm start
    ```
 
-### Creazione dell'Eseguibile
+### Creating the Executable
 
-Se desideri pacchettizzare l'applicazione per creare un eseguibile (es. per Windows):
+If you want to package the application to create an executable (e.g., for Windows):
 
 ```bash
 npm run pack
 ```
 
-Questo comando, grazie a `electron-builder`, creerà un pacchetto portable nella cartella `dist`.
+This command, thanks to `electron-builder`, will create a portable package in the `dist` folder.
 
-## Primo Avvio
+## First Launch
 
-Al primo avvio, Schedatore ti chiederà di selezionare una **Cartella di Lavoro** (Workspace).
-Scegli una directory vuota e sicura sul tuo disco fisso: al suo interno l'app creerà automaticamente:
+Upon first launch, ArchiView will ask you to select a **Workspace** folder.
+Choose an empty and safe directory on your hard drive: inside it, the app will automatically create:
 
-- Il file `database_manoscritti.json` (dove verranno salvati tutti i testi e i metadati).
-- La cartella `allegati_manoscritti` (dove verranno copiate le immagini e i PDF che allegherai alle schede).
-  Puoi sempre modificare la cartella di lavoro successivamente dalle **Impostazioni**.
+- The `database_manoscritti.json` file (where all texts and metadata will be saved).
+- The `allegati_manoscritti` folder (where images and PDFs you attach to your records will be copied).
+  You can always change the workspace folder later from the **Settings**.
 
-## Tecnologie Utilizzate
+## Technologies Used
 
-- [Electron](https://www.electronjs.org/) per il framework desktop.
-- [Tailwind CSS](https://tailwindcss.com/) per lo styling dell'interfaccia.
-- [Lucide Icons](https://lucide.dev/) per le icone.
+- [Electron](https://www.electronjs.org/) for the desktop framework.
+- [Tailwind CSS](https://tailwindcss.com/) for UI styling.
+- [Lucide Icons](https://lucide.dev/) for icons.
 
-## Licenza
+## License
 
-Consulta il file [LICENSE](LICENSE) per ulteriori informazioni sulle condizioni d'uso.
+See the [LICENSE](LICENSE) file for more information on the terms of use.
