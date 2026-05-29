@@ -14,7 +14,13 @@ electron.exe
 *.dll
 *.so
 *.dylib
-
-
+TODO
+.gitignore
+hub-server/
 # File temporanei di sistema
 Thumbs.db
+
+# Credenziali Cloud e Configurazione locale
+src/main/ipc/cloudCredentials.ts
+vercel-hub/node_modules/
+vercel-hub/.env

@@ -39,4 +39,12 @@ contextBridge.exposeInMainWorld('apiSettings', {
     get: () => ipcRenderer.invoke('get-settings'),
     save: (settings) => ipcRenderer.invoke('save-settings', settings)
 });
+
+contextBridge.exposeInMainWorld('apiDrive', {
+    auth: () => ipcRenderer.invoke('drive-auth'),
+    logout: () => ipcRenderer.invoke('drive-logout'),
+    status: () => ipcRenderer.invoke('drive-status'),
+    pull: () => ipcRenderer.invoke('drive-pull'),
+    sync: () => ipcRenderer.invoke('drive-sync')
+});
 export {};

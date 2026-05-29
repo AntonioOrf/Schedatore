@@ -68,6 +68,7 @@
     "archiver": "^8.0.0",
     "cors": "^2.8.6",
     "electron-updater": "^6.8.3",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "googleapis": "^173.0.0"
   }
 }

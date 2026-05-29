@@ -28,9 +28,9 @@
                     <i data-lucide="folder-plus" class="w-5 h-5 mr-2"></i>
                     Crea Nuova Cartella
                 </button>
-                <button onclick="mostraHubConnessioneForm()" class="btn w-full justify-center py-3 text-lg font-medium shadow-sm text-amber-900 border border-amber-300 hover:bg-amber-50" style="background-color: #fef3c7;">
+                <button onclick="ripristinaDaGoogleDrive()" class="btn w-full justify-center py-3 text-lg font-medium shadow-sm text-blue-900 border border-blue-300 hover:bg-blue-50" style="background-color: #eff6ff;">
                     <i data-lucide="cloud-download" class="w-5 h-5 mr-2"></i>
-                    Connetti a Hub (Cloud)
+                    Ripristina da Google Drive (Cloud)
                 </button>
             </div>
 
@@ -49,25 +49,6 @@
                 <div class="flex justify-end gap-2 mt-4">
                     <button onclick="nascondiInputNuovaCartella()" class="btn btn-ghost text-sm">Annulla</button>
                     <button onclick="creaCartellaIniziale()" class="btn btn-primary text-sm shadow-sm">Crea e Avvia</button>
-                </div>
-            </div>
-
-            <div id="welcome-hub-form" class="hidden-tab mt-4 text-left border border-stone-200 p-4 rounded-md bg-stone-50">
-                <div class="mb-3">
-                    <label class="form-label font-medium mb-1 block text-sm">URL del Server Hub</label>
-                    <input type="text" id="welcome-hub-url" class="form-input w-full focus:ring-2 focus:ring-amber-500/20 text-sm" placeholder="Es. http://localhost:3000">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label font-medium mb-1 block text-sm">ID Repository (Stanza)</label>
-                    <input type="text" id="welcome-hub-repoid" class="form-input w-full focus:ring-2 focus:ring-amber-500/20 text-sm" placeholder="Es. repo_xyz">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label font-medium mb-1 block text-sm">Chiave Segreta di Accesso (Key)</label>
-                    <input type="password" id="welcome-hub-key" class="form-input w-full focus:ring-2 focus:ring-amber-500/20 text-sm" placeholder="Es. tk_abc...">
-                </div>
-                <div class="flex justify-end gap-2 mt-4">
-                    <button onclick="nascondiHubConnessioneForm()" class="btn btn-ghost text-sm">Annulla</button>
-                    <button onclick="connettiEClonaHub()" class="btn btn-primary text-sm shadow-sm">Connetti e Clona</button>
                 </div>
             </div>
         </div>
@@ -96,34 +77,40 @@
         document.getElementById('welcome-new-folder-name').value = '';
     };
 
-    window.mostraHubConnessioneForm = function() {
-        document.getElementById('welcome-buttons').classList.add('hidden-tab');
-        document.getElementById('welcome-hub-form').classList.remove('hidden-tab');
-        const urlInput = document.getElementById('welcome-hub-url');
-        if (urlInput && !urlInput.value) {
-            urlInput.value = "http://localhost:3000";
-        }
-    };
-
-    window.nascondiHubConnessioneForm = function() {
-        document.getElementById('welcome-hub-form').classList.add('hidden-tab');
-        document.getElementById('welcome-buttons').classList.remove('hidden-tab');
-        document.getElementById('welcome-hub-repoid').value = '';
-        document.getElementById('welcome-hub-key').value = '';
-    };
-
-    window.connettiEClonaHub = async function() {
-        const url = document.getElementById('welcome-hub-url').value.trim();
-        const repoId = document.getElementById('welcome-hub-repoid').value.trim();
-        const key = document.getElementById('welcome-hub-key').value.trim();
+    window.ripristinaDaGoogleDrive = async function() {
+        if (!window.apiDrive) return;
         
-        if (!url || !repoId || !key) {
-            mostraMessaggio("Compila tutti i campi per connetterti all'Hub.", "error");
-            return;
-        }
-
-        if (typeof window.clonaRepositoryHub === 'function') {
-            await window.clonaRepositoryHub(url, repoId, key);
+        mostraMessaggio("Autenticazione con Google Drive in corso...", "info");
+        try {
+            await window.apiDrive.auth();
+            
+            mostraMessaggio("Ricerca dell'archivio su Google Drive...", "info");
+            const driveData = await window.apiDrive.pull();
+            
+            if (!driveData || !driveData.database) {
+                mostraMessaggio("Nessun database (database_manoscritti.json) trovato su Google Drive.", "warning");
+                return;
+            }
+            
+            mostraMessaggio("Archivio trovato! Seleziona dove vuoi salvarlo sul tuo PC.", "info");
+            
+            if (window.apiBrowser && window.apiBrowser.selectBaseDirectory) {
+                const basePath = await window.apiBrowser.selectBaseDirectory();
+                if (basePath) {
+                    const success = await window.apiBrowser.cloneWorkspaceHub(basePath, 'Vault_GoogleDrive', null, driveData.database);
+                    if (success) {
+                        document.getElementById('welcome-modal').classList.add('hidden-tab');
+                        mostraMessaggio("Archivio ripristinato con successo! Riavvio in corso...", "success");
+                        if (typeof avviaApp === 'function') await avviaApp();
+                    } else {
+                        throw new Error("Errore durante la creazione dei file locali.");
+                    }
+                }
+            }
+            
+        } catch (e) {
+            console.error(e);
+            mostraMessaggio("Errore: " + (e.message || "Impossibile ripristinare da Google Drive"), "error");
         }
     };
 

@@ -326,6 +326,17 @@ window.toggleVaultSwitcher = function(e) {
     }
 };
 
+window.rimuoviVaultDallaLista = async function(event, pathToRemove) {
+    event.stopPropagation();
+    event.preventDefault();
+    const settings = await window.apiSettings.get();
+    if (settings.recentWorkspaces) {
+        settings.recentWorkspaces = settings.recentWorkspaces.filter(p => p !== pathToRemove);
+        await window.apiSettings.save(settings);
+        window.aggiornaListaVault();
+    }
+};
+
 window.aggiornaListaVault = async function() {
     if (window.apiBrowser && window.apiBrowser.getRecentWorkspaces) {
         const recents = await window.apiBrowser.getRecentWorkspaces();
@@ -337,22 +348,38 @@ window.aggiornaListaVault = async function() {
                 recents.forEach(path => {
                     const name = path.split(/[\/\\]/).pop();
                     const isCurrent = path === currentPath;
-                    const btn = document.createElement('button');
-                    btn.className = `w-full text-left px-3 py-2 text-sm rounded flex items-center justify-between transition-colors ${isCurrent ? 'bg-amber-50 text-amber-900 font-semibold cursor-default' : 'text-stone-700 hover:bg-stone-100 hover:text-stone-900'}`;
+                    
+                    const divContainer = document.createElement('div');
+                    divContainer.className = `w-full text-left px-2 py-1.5 text-sm rounded flex items-center justify-between transition-colors ${isCurrent ? 'bg-amber-50 text-amber-900 font-semibold cursor-default' : 'text-stone-700 hover:bg-stone-100 hover:text-stone-900 cursor-pointer'}`;
                     
                     if (!isCurrent) {
-                        btn.onclick = () => {
+                        divContainer.onclick = () => {
                             window.apiBrowser.openRecentWorkspace(path);
                         };
                     } else {
-                        btn.onclick = (e) => { e.stopPropagation(); }; // Non fa nulla
+                        divContainer.onclick = (e) => { e.stopPropagation(); }; // Non fa nulla
                     }
                     
-                    btn.innerHTML = `
-                        <span class="truncate pr-2" title="${path}">${escapeHTML(name)}</span>
-                        ${isCurrent ? '<i data-lucide="check" class="w-4 h-4 text-amber-600 shrink-0"></i>' : ''}
-                    `;
-                    list.appendChild(btn);
+                    const nameSpan = document.createElement('span');
+                    nameSpan.className = 'truncate pr-2 flex-1';
+                    nameSpan.title = path;
+                    nameSpan.textContent = name;
+                    divContainer.appendChild(nameSpan);
+
+                    if (isCurrent) {
+                        const checkIcon = document.createElement('div');
+                        checkIcon.innerHTML = '<i data-lucide="check" class="w-4 h-4 text-amber-600 shrink-0"></i>';
+                        divContainer.appendChild(checkIcon.firstChild);
+                    } else {
+                        const delBtn = document.createElement('button');
+                        delBtn.className = 'p-1 rounded hover:bg-red-100 text-stone-400 hover:text-red-600 transition-colors shrink-0 opacity-50 hover:opacity-100';
+                        delBtn.innerHTML = '<i data-lucide="x" class="w-3.5 h-3.5"></i>';
+                        delBtn.onclick = (e) => window.rimuoviVaultDallaLista(e, path);
+                        delBtn.title = "Rimuovi dalla lista";
+                        divContainer.appendChild(delBtn);
+                    }
+                    
+                    list.appendChild(divContainer);
                 });
                 if (window.lucide) lucide.createIcons({ nodes: [list] });
             }

@@ -13,9 +13,10 @@
             } catch (e) {}
         })();
     </script>
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: local-asset:; frame-src 'self' local-asset:; connect-src 'self' https://api.github.com http: https: ws: wss:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://js.pusher.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: local-asset:; frame-src 'self' local-asset:; connect-src 'self' https://api.github.com http: https: ws: wss:;">
     <link rel="stylesheet" href="css/tailwind.css">
     <script src="vendor/lucide.min.js"></script>
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="min-h-screen p-4 md:p-6 flex flex-col h-screen overflow-hidden">
@@ -164,6 +165,8 @@
     <script src="js/logic/settingsLogic.js"></script>
     <script src="js/logic/diffMergeLogic.js"></script>
     <script src="js/logic/hubLogic.js"></script>
+    <script src="js/logic/driveLogic.js"></script>
+    <script src="js/logic/realtimeLogic.js"></script>
 
     <script src="js/components/toasts.js"></script>
     <script src="js/components/modals.js"></script>

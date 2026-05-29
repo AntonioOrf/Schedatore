@@ -67,6 +67,15 @@ async function salvaTutto() {
     if (window.apiBrowser) {
         window.ultimoCaricamento = Date.now();
         await window.apiBrowser.salvaDati(appData);
+        
+        // Sincronizzazione automatica su Drive se abilitata
+        if (window.apiSettings && typeof window.sincronizzaGoogleDrive === 'function') {
+            const settings = await window.apiSettings.get();
+            if (settings.driveAutofetch) {
+                // Esegue in background senza bloccare il salvataggio o mostrare toast continui
+                window.sincronizzaGoogleDrive(true).catch(e => console.error("Auto-sync error", e));
+            }
+        }
     }
 }
 
